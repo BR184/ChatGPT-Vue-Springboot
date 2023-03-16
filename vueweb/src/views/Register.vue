@@ -20,7 +20,10 @@
                 <el-input type="password" v-model="ruleForm.email" autocomplete="off" placeholder="邮箱"
                     prefix-icon="el-icon-message"></el-input>
             </el-form-item>
-            <el-form-item style="margin-bottom:10px">
+            <el-form-item prop='agree'>
+                <el-checkbox v-model='agree'><span>我已阅读并同意</span><el-link target="_blank">《用户协议》</el-link></el-checkbox>
+            </el-form-item>
+            <el-form-item style="margin:20px 0px 10px 0px">
                 <el-button type="success" @click="submitForm('ruleForm')" style="width:100%">注册账号</el-button>
             </el-form-item>
             <el-form-item>
@@ -34,7 +37,7 @@
 <script>
 export default {
     data() {
-        var validatePass = (rule, value, callback) =>{
+        var validatePass = (rule, value, callback) => {
             if (value === '') {
                 callback(new Error('请输入密码'));
             } else {
@@ -44,7 +47,7 @@ export default {
                 callback();
             }
         };
-        var validatePass2 = (rule, value, callback) =>{
+        var validatePass2 = (rule, value, callback) => {
             if (value === '') {
                 callback(new Error('请再次输入密码'));
             } else if (value !== this.ruleForm.password) {
@@ -53,24 +56,24 @@ export default {
                 callback();
             }
         };
-        function validateEmail(rule, value, callback){
+        function validateEmail(rule, value, callback) {
             const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/;
             if (regEmail.test(value)) {
-                // 合法的邮箱
                 return callback();
             }
             callback(new Error("请输入合法的邮箱"));
         };
-        function validateUser (rule, value, callback){
+        function validateUser(rule, value, callback) {
             const usernameRegex = /^.{2,16}$/;
             if (usernameRegex.test(value)) {
-                // 合法的邮箱
                 return callback();
             }
-            callback(new Error("请输入合法的用户名"));
+            callback(new Error("用户名长度为2-16个字符！"));
         };
 
+
         return {
+            agree: false,
             ruleForm: {
                 username: '',
                 password: '',
@@ -79,9 +82,11 @@ export default {
             },
             rules: {
                 username: [
-                    { validator: this.$debounce((rule, value, callback) => {
-                        validateUser(rule,value,callback)
-                    }, 500), trigger: 'change' }
+                    {
+                        validator: this.$debounce((rule, value, callback) => {
+                            validateUser(rule, value, callback)
+                        }, 500), trigger: 'change'
+                    }
                 ],
                 password: [
                     { validator: validatePass, trigger: 'change' }
@@ -90,26 +95,35 @@ export default {
                     { validator: validatePass2, trigger: 'change' }
                 ],
                 email: [
-                    { validator: this.$debounce((rule, value, callback) => {
-                        validateEmail(rule,value,callback)
-                    }, 500), trigger: 'change' }
+                    {
+                        validator: this.$debounce((rule, value, callback) => {
+                            validateEmail(rule, value, callback)
+                        }, 500), trigger: 'change'
+                    }
                 ],
             }
         };
     },
     methods: {
-        submitForm(formName) {
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    alert('submit!');
-                } else {
-                    console.log('error submit!!');
-                    return false;
-                }
-            });
-        },
-        resetForm(formName) {
-            this.$refs[formName].resetFields();
+        submitForm(form) {
+            if (this.agree) {
+                this.axios.post("http://localhost:8081/user/register", this.form).then((resp) => {
+                    let data = resp.data;
+                    if (data.success) {
+                        this.form = {};
+                        this.$message({
+                            message: "注册成功！",
+                            type: "success"
+                        });
+                    }
+
+                })
+            } else {
+                this.$message({
+                    message: '请先阅读并同意《用户协议》以继续',
+                    type: 'warning'
+                });
+            }
         },
         toLogin() {
             this.$router.push({ path: '/login' })
