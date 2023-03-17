@@ -6,6 +6,7 @@ import com.klbr184.utils.RedisCache;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -55,6 +56,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         //TODO 获取权限信息封装到Authentication中
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(user,null,null);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         //放行
         filterChain.doFilter(request,response);
     }
