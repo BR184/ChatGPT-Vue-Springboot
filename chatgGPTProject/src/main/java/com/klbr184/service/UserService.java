@@ -1,6 +1,10 @@
 package com.klbr184.service;
 
+import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
+import com.klbr184.resp.CommonResp;
+
+import java.util.Map;
 
 /**
  * @author KL
@@ -9,4 +13,5 @@ import com.klbr184.req.UserSaveReq;
  */
 public interface UserService {
     void register(UserSaveReq req);
+    CommonResp<Map> login(UserAuthReq req);
 }

@@ -13,3 +13,6 @@ spring:
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
+  redis:
+    password: root
+    host: 192.168.88.130

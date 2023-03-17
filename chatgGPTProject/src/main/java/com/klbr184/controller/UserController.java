@@ -2,6 +2,7 @@ package com.klbr184.controller;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import com.klbr184.req.UserAuthReq;
 import com.klbr184.resp.CommonResp;
 import com.klbr184.req.UserSaveReq;
 import com.klbr184.service.UserService;
@@ -33,5 +34,9 @@ public class UserController {
         CommonResp resp = new CommonResp<>();
         userService.register(req);
         return resp;
+    }
+    @PostMapping("login")
+    public CommonResp login(@RequestBody UserAuthReq req){
+        return userService.login(req);
     }
 }

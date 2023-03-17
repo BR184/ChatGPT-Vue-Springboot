@@ -1,6 +1,8 @@
 package com.klbr184.resp;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -9,6 +11,8 @@ import lombok.ToString;
  * @since 2023-03-17 01:03:20
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CommonResp<T> {
     private Boolean success = true;
     private String Message;

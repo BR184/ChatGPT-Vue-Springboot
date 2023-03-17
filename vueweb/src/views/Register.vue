@@ -5,7 +5,7 @@
                 注册你的账户
             </h1>
             <el-form-item label="" prop="username">
-                <el-input type="username" v-model="ruleForm.username" autocomplete="off" placeholder="用户名"
+                <el-input type="text" v-model="ruleForm.username" autocomplete="off" placeholder="用户名"
                     prefix-icon="el-icon-user"></el-input>
             </el-form-item>
             <el-form-item label="" prop="password">
@@ -17,7 +17,7 @@
                     prefix-icon="el-icon-lock"></el-input>
             </el-form-item>
             <el-form-item label="" prop="email">
-                <el-input type="password" v-model="ruleForm.email" autocomplete="off" placeholder="邮箱"
+                <el-input type="text" v-model="ruleForm.email" autocomplete="off" placeholder="邮箱"
                     prefix-icon="el-icon-message"></el-input>
             </el-form-item>
             <el-form-item prop='agree'>
@@ -98,7 +98,7 @@ export default {
                     {
                         validator: this.$debounce((rule, value, callback) => {
                             validateEmail(rule, value, callback)
-                        }, 500), trigger: 'change'
+                        }, 500), trigger: 'blur'
                     }
                 ],
             }

@@ -3,17 +3,27 @@ package com.klbr184.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.klbr184.entity.LoginUser;
 import com.klbr184.entity.UserEntity;
 import com.klbr184.dao.UserDao;
+import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
+import com.klbr184.resp.CommonResp;
 import com.klbr184.service.UserService;
+import com.klbr184.utils.JwtUtil;
+import com.klbr184.utils.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author KL
@@ -24,6 +34,10 @@ import java.util.List;
 public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements UserService{
     @Resource
     private UserDao userDao;
+    @Autowired
+    private AuthenticationConfiguration authenticationConfiguration;
+    @Autowired
+    private RedisCache redisCache;
 
     @Override
     public void register(UserSaveReq req) {
@@ -31,6 +45,25 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         if (ObjectUtils.isEmpty(selectByUsername(userEntity.getUsername()))){
             userDao.insert(userEntity);
         }
+    }
+
+    @Override
+    public CommonResp<Map> login(UserAuthReq req){
+        Authentication authenticate;
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(req.getUsername(),req.getPassword());
+            authenticate = authenticationConfiguration.getAuthenticationManager().authenticate(authenticationToken);
+        } catch (Exception e) {
+            throw new RuntimeException("登陆失败");
+        }
+        LoginUser user = (LoginUser) authenticate.getPrincipal();
+        String userID = user.getUser().getId().toString();
+        String jwt = JwtUtil.createJWT(userID);
+        Map<String,String> map = new HashMap<>();
+        map.put("token", jwt);
+        redisCache.setCacheObject("login:"+userID, user);
+        return new CommonResp<>(true, "登陆成功", map);
+
     }
 
     public UserEntity selectByUsername(String username){
