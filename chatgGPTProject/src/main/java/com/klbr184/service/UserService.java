@@ -14,4 +14,6 @@ import java.util.Map;
 public interface UserService {
     void register(UserSaveReq req);
     CommonResp<Map> login(UserAuthReq req);
+
+    CommonResp logout();
 }

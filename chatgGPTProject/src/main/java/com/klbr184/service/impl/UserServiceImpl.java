@@ -12,10 +12,12 @@ import com.klbr184.resp.CommonResp;
 import com.klbr184.service.UserService;
 import com.klbr184.utils.JwtUtil;
 import com.klbr184.utils.RedisCache;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -64,6 +66,16 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         redisCache.setCacheObject("login:"+userID, user);
         return new CommonResp<>(true, "登陆成功", map);
 
+    }
+
+    @Override
+    public CommonResp logout() {
+        UsernamePasswordAuthenticationToken authentication =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser user = (LoginUser) authentication.getPrincipal();
+        Long id = user.getUser().getId();
+        redisCache.deleteObject("login:"+id);
+        return new CommonResp<> (true, "注销成功!",null);
     }
 
     public UserEntity selectByUsername(String username){

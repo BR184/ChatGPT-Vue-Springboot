@@ -39,4 +39,12 @@ public class UserController {
     public CommonResp login(@RequestBody UserAuthReq req){
         return userService.login(req);
     }
+    @RequestMapping("logout")
+    public CommonResp logout(){
+        return userService.logout();
+    }
+    @RequestMapping("test")
+    public CommonResp test(){
+        return new CommonResp<>(true,"Hi!",null);
+    }
 }
