@@ -105,12 +105,12 @@ export default {
         };
     },
     methods: {
-        submitForm(form) {
+        submitForm(ruleForm) {
             if (this.agree) {
-                this.axios.post("http://localhost:8081/user/register", this.form).then((resp) => {
+                this.axios.post("http://localhost:8081/user/register", this.ruleForm).then((resp) => {
                     let data = resp.data;
                     if (data.success) {
-                        this.form = {};
+                        this.ruleForm = {};
                         this.$message({
                             message: "注册成功！",
                             type: "success"

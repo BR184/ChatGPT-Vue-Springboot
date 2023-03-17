@@ -1,8 +1,12 @@
 package com.klbr184.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -13,15 +17,18 @@ import java.util.Date;
  */
 @TableName("user")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
-    private long id;
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long id;
     private String username;
     private String password;
     private String email;
     private String head;
-    private long coin;
-    private long chatForm;
+    private Long coin;
+    private Long chatForm;
     private Date lastLogin;
     private Date regTime;
-    private byte deleted;
+    private Byte deleted;
 }
