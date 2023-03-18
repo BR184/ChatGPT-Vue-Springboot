@@ -7,6 +7,7 @@ import com.klbr184.resp.CommonResp;
 import com.klbr184.req.UserSaveReq;
 import com.klbr184.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,7 @@ public class UserController {
         return userService.logout();
     }
     @RequestMapping("test")
+    @PreAuthorize("hasAuthority('default')")
     public CommonResp test(){
         return new CommonResp<>(true,"Hi!",null);
     }

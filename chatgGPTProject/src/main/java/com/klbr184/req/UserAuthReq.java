@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
  * @version 1.0
  * @since 2023-03-16 23:43:53
  */
-@TableName("user")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

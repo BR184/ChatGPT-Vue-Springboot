@@ -5,14 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.klbr184.entity.LoginUser;
 import com.klbr184.entity.UserEntity;
-import com.klbr184.dao.UserDao;
+import com.klbr184.mapper.UserMapper;
 import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
 import com.klbr184.resp.CommonResp;
 import com.klbr184.service.UserService;
 import com.klbr184.utils.JwtUtil;
 import com.klbr184.utils.RedisCache;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -33,9 +32,9 @@ import java.util.Map;
  * @since 2023-03-17 00:36:05
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements UserService{
+public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements UserService{
     @Resource
-    private UserDao userDao;
+    private UserMapper userMapper;
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
     @Autowired
@@ -45,7 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     public void register(UserSaveReq req) {
         UserEntity userEntity = BeanUtil.copyProperties(req, UserEntity.class);
         if (ObjectUtils.isEmpty(selectByUsername(userEntity.getUsername()))){
-            userDao.insert(userEntity);
+            userMapper.insert(userEntity);
         }
     }
 
@@ -81,7 +80,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     public UserEntity selectByUsername(String username){
         QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(UserEntity::getUsername,username);
-        List<UserEntity> userEntityList = userDao.selectList(wrapper);
+        List<UserEntity> userEntityList = userMapper.selectList(wrapper);
         if(CollectionUtils.isEmpty(userEntityList)){
             return null;
         }else{
