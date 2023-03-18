@@ -63,7 +63,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         Map<String,String> map = new HashMap<>();
         map.put("token", jwt);
         redisCache.setCacheObject("login:"+userID, user);
-        return new CommonResp<>(true, "登陆成功", map);
+        return new CommonResp<>(200, "登陆成功", map);
 
     }
 
@@ -74,7 +74,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         LoginUser user = (LoginUser) authentication.getPrincipal();
         Long id = user.getUser().getId();
         redisCache.deleteObject("login:"+id);
-        return new CommonResp<> (true, "注销成功!",null);
+        return new CommonResp<> (200, "注销成功!",null);
     }
 
     public UserEntity selectByUsername(String username){

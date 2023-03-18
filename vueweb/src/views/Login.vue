@@ -37,6 +37,17 @@
         methods: { 
             onSubmit() {
                 // console.log('submit!',this.loginForm);
+                this.axios.post("http://localhost:8081/user/login", this.loginForm).then((resp) => {
+                    let data = resp.data;
+                    if (data.success) {
+                        this.ruleForm = {};
+                        this.$message({
+                            message: "登录成功！",
+                            type: "success"
+                        });
+                    }
+
+                })
             },
             toRegister(){
                 this.$router.push({path:'/register'})

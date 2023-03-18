@@ -47,6 +47,6 @@ public class UserController {
     @RequestMapping("test")
     @PreAuthorize("hasAuthority('default')")
     public CommonResp test(){
-        return new CommonResp<>(true,"Hi!",null);
+        return new CommonResp<>(200,"Hi!",null);
     }
 }

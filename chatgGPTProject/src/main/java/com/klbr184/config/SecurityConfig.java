@@ -1,6 +1,8 @@
 package com.klbr184.config;
 
 import com.klbr184.fliter.JwtAuthenticationTokenFilter;
+import com.klbr184.handler.AccessDeniedHandlerImpl;
+import com.klbr184.handler.AuthenticationEntryPointImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +28,10 @@ public class SecurityConfig{
 
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+    @Autowired
+    private AuthenticationEntryPointImpl authenticationEntryPoint;
+    @Autowired
+    private AccessDeniedHandlerImpl accessDeniedHandler;
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -41,6 +47,10 @@ public class SecurityConfig{
                 .authorizeRequests()
                 .antMatchers("/user/login","/user/register").anonymous()
                 .anyRequest().authenticated();
+        //配置异常处理器
+        http.exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler);
 
         //把验证Token的过滤器放到登陆验证之前
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);

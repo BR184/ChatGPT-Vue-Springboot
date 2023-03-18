@@ -8,6 +8,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.rmi.registry.Registry;
 
 /**
+ * 解决SpringBoot的跨域问题
+ *
  * @author KL
  * @version 1.0
  * @since 2023-03-17 01:43:20

@@ -14,7 +14,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommonResp<T> {
-    private Boolean success = true;
+    private Integer code = 200;
     private String Message;
     private T content;
 }
