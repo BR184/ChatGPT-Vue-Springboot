@@ -51,7 +51,8 @@ public class SecurityConfig{
         http.exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler);
-
+        //允许跨域
+        http.cors();
         //把验证Token的过滤器放到登陆验证之前
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

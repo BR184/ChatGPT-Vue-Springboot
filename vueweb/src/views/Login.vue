@@ -1,5 +1,5 @@
 <template>
-    <body id="poster">
+    <div id="poster">
         <el-form class="login_container" laber-position="left" label-width="0px">
             <h1 class="login_title">
                 登陆你的账户
@@ -21,7 +21,7 @@
                 <el-button type="success" @click="onSubmit" style="width:100%">立即登陆</el-button>
             </el-form-item>
         </el-form>
-    </body>
+    </div>
 </template>
 
 <script>

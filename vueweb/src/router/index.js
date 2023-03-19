@@ -1,12 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import Home from '../views/HomeView.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
+import Index from '../views/IndexView.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/index',
+    name: 'Index',
+    component: Index
+  },
   {
     path: '/login',
     name: 'Login',
@@ -20,7 +26,7 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: HomeView
+    component: Home
   },
   {
     path: '/about',
@@ -33,6 +39,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  mode:"history",
   routes
 })
 
