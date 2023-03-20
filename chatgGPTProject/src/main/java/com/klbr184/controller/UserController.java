@@ -2,6 +2,7 @@ package com.klbr184.controller;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import com.klbr184.entity.UserEntity;
 import com.klbr184.req.UserAuthReq;
 import com.klbr184.resp.CommonResp;
 import com.klbr184.req.UserSaveReq;
@@ -28,6 +29,13 @@ public class UserController {
     @Autowired
     private UserService userService;
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @PreAuthorize("hasAuthority('default')")
+    public CommonResp getUser(){
+        UserEntity user = userService.getUser();
+        CommonResp resp = new CommonResp();
+        resp
+    }
     @PostMapping("register")
     public CommonResp register(@RequestBody UserSaveReq req){
         req.setPassword(passwordEncoder.encode(req.getPassword()));

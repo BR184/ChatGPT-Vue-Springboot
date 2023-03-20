@@ -45,7 +45,7 @@ public class SecurityConfig{
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/login","/user/register").anonymous()
+                .antMatchers("/user/login","/user/register","/user/logout").anonymous()
                 .anyRequest().authenticated();
         //配置异常处理器
         http.exceptionHandling()

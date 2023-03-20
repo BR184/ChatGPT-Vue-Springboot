@@ -64,7 +64,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         map.put("token", jwt);
         redisCache.setCacheObject("login:"+userID, user);
         return new CommonResp<>(200, "登陆成功", map);
-
     }
 
     @Override
@@ -75,6 +74,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         Long id = user.getUser().getId();
         redisCache.deleteObject("login:"+id);
         return new CommonResp<> (200, "注销成功!",null);
+    }
+
+    @Override
+    public UserEntity getUser() {
+        return null;
     }
 
     public UserEntity selectByUsername(String username){

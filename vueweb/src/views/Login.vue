@@ -6,10 +6,11 @@
             </h1>
             <el-form-item>
                 <el-input type="text" v-model="loginForm.username" placeholder="账号" autocomplete="off" prefix-icon="el-icon-user
-                "></el-input>
+                    "></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 2px;">
-                <el-input type="password" v-model="loginForm.password" placeholder="密码" autocomplete="off" show-password prefix-icon="el-icon-lock"></el-input>
+                <el-input type="password" v-model="loginForm.password" placeholder="密码" autocomplete="off" show-password
+                    prefix-icon="el-icon-lock"></el-input>
             </el-form-item>
             <div class="login_text" style="width: 100%;">
                 <el-link target="_blank">忘记密码</el-link>
@@ -25,68 +26,92 @@
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-                loginForm: {
-                    username: '',
-                    password: '' 
-                }
-            }
-        },
-        methods: { 
-            onSubmit() {
-                // console.log('submit!',this.loginForm);
-                this.axios.post("http://localhost:8081/user/login", this.loginForm).then((resp) => {
-                    let data = resp.data;
-                    if (data.success) {
-                        this.ruleForm = {};
-                        this.$message({
-                            message: "登录成功！",
-                            type: "success"
-                        });
-                    }
-
-                })
-            },
-            toRegister(){
-                this.$router.push({path:'/register'})
+import {token} from "../utils/token.js";
+export default {
+    data() {
+        return {
+            loginForm: {
+                username: '',
+                password: ''
             }
         }
+    },
+    methods: {
+        onSubmit() {
+            console.log(this.$getToken())
+            this.axios.post("/user/login", this.loginForm).then((resp) => {
+                let data = resp.data;
+                if (data.code==200) { 
+                    this.$saveToken(resp.data.data.token)
+                    this.loginForm = {};
+                    this.$message({
+                        message: "登录成功！",
+                        type: "success"
+                    }); 
+                    this.$router.push({ path: '/index' })
+                }else{
+                    this.$message.error("登录失败！,错误代码"+data.code); 
+                }
+            })
+        },
+        toRegister() {
+            this.$router.push({ path: '/register' })
+        },
+        beforeRouteEnter(to, from, next) {
+            // 获取根元素
+            let root = document.getElementById('app')
+            // 添加.dark-theme类名
+            root.classList.add('dark-theme')
+            // 继续路由跳转
+            next()
+        },
+        // 在离开登录界面之前
+        beforeRouteLeave(to, from, next) {
+            // 获取根元素
+            let root = document.getElementById('app')
+            // 移除.dark-theme类名
+            root.classList.remove('dark-theme')
+            // 继续路由跳转
+            next()
+        }
     }
+}
 </script>
 
 <style>
-    #poster{
-        background-position: center;
-        height: 100%;
-        width: 100%;
-        background-size: cover;
-        position: fixed;
-    }
-    body{
-        margin: 0px;
-        padding: 0px;
-    }
-    .login_container{
-        border-radius: 20px;
-        background-clip: padding-box;
-        margin: 90px auto;
-        width: 350px;
-        padding: 35px 35px 15px 35px;
-        background-color: #fff;
-        border: 1px solid #eaeaea;
-        box-shadow:0 0 25px #cac6c6;
-    }
-    .login_title{
-        margin: 0px auto 40px auto;
-        text-align: center;
-        color: #505458;
-    }
-    .login_text{
-        display:flex;
-        flex-direction: row;
-        justify-content:end;
-        margin-bottom: 30px;
-    }
-</style>
+#poster {
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    position: fixed;
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.login_container {
+    border-radius: 20px;
+    background-clip: padding-box;
+    margin: 90px auto;
+    width: 350px;
+    padding: 35px 35px 15px 35px;
+    background-color: #fff;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 0 25px #cac6c6;
+}
+
+.login_title {
+    margin: 0px auto 40px auto;
+    text-align: center;
+    color: #505458;
+}
+
+.login_text {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    margin-bottom: 30px;
+}</style>

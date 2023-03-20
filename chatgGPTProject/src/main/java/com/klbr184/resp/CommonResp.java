@@ -3,7 +3,6 @@ package com.klbr184.resp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * @author KL
@@ -16,5 +15,5 @@ import lombok.ToString;
 public class CommonResp<T> {
     private Integer code = 200;
     private String Message;
-    private T content;
+    private T data;
 }

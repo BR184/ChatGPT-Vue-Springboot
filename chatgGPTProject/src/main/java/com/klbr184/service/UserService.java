@@ -1,5 +1,6 @@
 package com.klbr184.service;
 
+import com.klbr184.entity.UserEntity;
 import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
 import com.klbr184.resp.CommonResp;
@@ -13,6 +14,10 @@ import java.util.Map;
  */
 public interface UserService {
     void register(UserSaveReq req);
+
     CommonResp<Map> login(UserAuthReq req);
+
     CommonResp logout();
+
+    UserEntity getUser();
 }
