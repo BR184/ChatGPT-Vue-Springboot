@@ -4,6 +4,7 @@ import Home from '../views/HomeView.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Index from '../views/IndexView.vue'
+import Logout from '../views/Logout.vue'
 
 Vue.use(VueRouter)
 
@@ -19,6 +20,11 @@ const routes = [
     component: Login
   },
   {
+    path:'/logout',
+    name:'Logout',
+    component:Logout
+  },
+  {
     path: '/register',
     name: 'Register',
     component: Register
@@ -31,16 +37,21 @@ const routes = [
   {
     path: '/about',
     name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
   }
 ]
 
 const router = new VueRouter({
   mode:"history",
-  routes
+  routes:routes,
 })
+//var base = ["Index","Login","Register"];
+
+//router.beforeEach((to,from,next)=>{
+//  const token = localStorage.getItem("Token")
+//  base.forEach
+//  if(base.indexOf(to.name) !== -1 && !token) next({name:'Login'})
+//  else next()
+//})
 
 export default router

@@ -1,6 +1,5 @@
 package com.klbr184.service;
 
-import com.klbr184.entity.UserEntity;
 import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
 import com.klbr184.resp.CommonResp;
@@ -19,5 +18,5 @@ public interface UserService {
 
     CommonResp logout();
 
-    UserEntity getUser();
+    CommonResp getUser();
 }

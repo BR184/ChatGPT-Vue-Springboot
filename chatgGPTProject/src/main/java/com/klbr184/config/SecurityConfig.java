@@ -45,7 +45,8 @@ public class SecurityConfig{
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/login","/user/register","/user/logout").anonymous()
+                .antMatchers("/user/login","/user/register").anonymous()
+                .antMatchers("/user/logout").authenticated()
                 .anyRequest().authenticated();
         //配置异常处理器
         http.exceptionHandling()
@@ -53,6 +54,8 @@ public class SecurityConfig{
                 .accessDeniedHandler(accessDeniedHandler);
         //允许跨域
         http.cors();
+        //禁用默认登出
+        http.logout().disable();
         //把验证Token的过滤器放到登陆验证之前
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

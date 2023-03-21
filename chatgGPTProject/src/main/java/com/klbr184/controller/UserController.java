@@ -1,22 +1,14 @@
 package com.klbr184.controller;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.crypto.digest.DigestUtil;
-import com.klbr184.entity.UserEntity;
 import com.klbr184.req.UserAuthReq;
-import com.klbr184.resp.CommonResp;
 import com.klbr184.req.UserSaveReq;
+import com.klbr184.resp.CommonResp;
 import com.klbr184.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author KL
@@ -31,10 +23,9 @@ public class UserController {
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PreAuthorize("hasAuthority('default')")
+    @GetMapping("info")
     public CommonResp getUser(){
-        UserEntity user = userService.getUser();
-        CommonResp resp = new CommonResp();
-        resp
+        return userService.getUser();
     }
     @PostMapping("register")
     public CommonResp register(@RequestBody UserSaveReq req){
@@ -48,7 +39,7 @@ public class UserController {
     public CommonResp login(@RequestBody UserAuthReq req){
         return userService.login(req);
     }
-    @RequestMapping("logout")
+    @GetMapping ("logout")
     public CommonResp logout(){
         return userService.logout();
     }

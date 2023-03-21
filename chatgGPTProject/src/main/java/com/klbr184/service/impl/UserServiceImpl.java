@@ -12,6 +12,7 @@ import com.klbr184.resp.CommonResp;
 import com.klbr184.service.UserService;
 import com.klbr184.utils.JwtUtil;
 import com.klbr184.utils.RedisCache;
+import com.klbr184.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -77,8 +78,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     }
 
     @Override
-    public UserEntity getUser() {
-        return null;
+    public CommonResp getUser() {
+        Long userId = SecurityUtil.getUserId();
+        UserEntity user = userMapper.selectById(userId);
+        user.setPassword(null);
+        return new CommonResp(200,"查询成功",user);
     }
 
     public UserEntity selectByUsername(String username){

@@ -107,7 +107,7 @@ export default {
     methods: {
         submitForm(ruleForm) {
             if (this.agree) {
-                this.axios.post("http://localhost:8081/user/register", this.ruleForm).then((resp) => {
+                this.axios.post("/user/register", this.ruleForm).then((resp) => {
                     let data = resp.data;
                     if (data.success) {
                         this.ruleForm = {};
@@ -115,8 +115,9 @@ export default {
                             message: "注册成功！",
                             type: "success"
                         });
+                    }else{
+                        this.$message.error("注册失败！,错误代码"+data.code); 
                     }
-
                 })
             } else {
                 this.$message({
