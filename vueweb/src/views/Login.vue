@@ -6,7 +6,7 @@
             </h1>
             <el-form-item>
                 <el-input type="text" v-model="loginForm.username" placeholder="账号" autocomplete="off" prefix-icon="el-icon-user
-                    "></el-input>
+                                "></el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 2px;">
                 <el-input type="password" v-model="loginForm.password" placeholder="密码" autocomplete="off" show-password
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import {token} from "../utils/token.js";
+import { token } from "../utils/token.js";
 export default {
     data() {
         return {
@@ -38,19 +38,24 @@ export default {
     },
     methods: {
         onSubmit() {
-            console.log(this.$getToken())
             this.axios.post("/user/login", this.loginForm).then((resp) => {
                 let data = resp.data;
-                if (data.code==200) { 
+                if (data.code == 200) {
                     this.$saveToken(resp.data.data.token)
                     this.loginForm = {};
                     this.$message({
                         message: "登录成功！",
                         type: "success"
-                    }); 
-                    this.$router.push({ path: '/index' })
-                }else{
-                    this.$message.error("登录失败！,错误代码"+data.code); 
+                    });
+                    this.axios.get("/user/info").then((resp) => {
+                        data = resp.data;
+                        if (data.code == 200) {
+                            localStorage.setItem("User", JSON.stringify(data.data))
+                            this.$router.push({ path: '/index' })
+                        }
+                    })
+                } else {
+                    this.$message.error("登录失败！,错误代码" + data.code);
                 }
             })
         },
@@ -114,4 +119,5 @@ body {
     flex-direction: row;
     justify-content: end;
     margin-bottom: 30px;
-}</style>
+}
+</style>

@@ -5,10 +5,16 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Index from '../views/IndexView.vue'
 import Logout from '../views/Logout.vue'
+import Chat from '../views/ChatView.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/',
+    name: 'Index',
+    component: Index
+  },
   {
     path: '/index',
     name: 'Index',
@@ -38,6 +44,11 @@ const routes = [
     path: '/about',
     name: 'about',
     component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+  },
+  {
+    path:'/chat',
+    name:'Chat',
+    component: Chat
   }
 ]
 

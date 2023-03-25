@@ -48,7 +48,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             userMapper.insert(userEntity);
         }
     }
-
+    //TODO 实现邮箱可以当做用户名登陆
     @Override
     public CommonResp<Map> login(UserAuthReq req){
         Authentication authenticate;

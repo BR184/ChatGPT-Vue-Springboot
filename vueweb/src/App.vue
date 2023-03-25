@@ -31,21 +31,24 @@
         <!-- 右侧 -->
         <el-col :span="9">
           <!-- 头像和菜单 -->
-          <el-dropdown v-if="this.$getToken()" trigger="hover">
-            <el-avatar src="avatar.png"></el-avatar>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>个人中心</el-dropdown-item>
-              <el-dropdown-item>设置</el-dropdown-item>
-              <el-dropdown-item @click.native="logout">登出</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <div v-if="this.$getToken()" class="head">
+            <el-dropdown trigger="hover">
+              <el-avatar src="avatar.png"></el-avatar>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>个人中心</el-dropdown-item>
+                <el-dropdown-item>设置</el-dropdown-item>
+                <el-dropdown-item @click.native="logout">登出</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <p style="margin-left:10px">{{this.$getUser().username}}</p>
+          </div>
           <el-button type="danger" size="small" v-else @click="login">登录</el-button>
         </el-col>
       </el-row>
     </el-header>
     <!-- 其余内容 -->
     <div>
-      <router-view />
+      <router-view style="height:100%" />
     </div>
   </el-container>
 </template>
@@ -71,9 +74,13 @@ export default {
             type: "success"
           }); 
           this.$removeToken();
+          this.$removeUser();
           this.$router.push({ path: '/login' })
         }else{
-          this.$message.error("注销失败！错误代码"+data.code); 
+          this.$message.error("注销失败！请先登陆！错误代码"+data.code); 
+          this.$removeToken();
+          this.$removeUser();
+          this.$router.push({ path: '/login' })
         }
       })
     },
@@ -104,6 +111,12 @@ export default {
 
 .meun {
   background-color: transparent;
+}
+.head{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
 #header {
