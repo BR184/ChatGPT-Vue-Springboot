@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.klbr184.mapper.ChatMapper">
+    <select id="selectChatByUserID" resultType="com.klbr184.vo.ChatVo">
+        SELECT
+            c.chat_date,c.chat_side,c.chat_content
+        FROM user_chat uc
+                 LEFT JOIN chat c ON uc.chat_id = c.chat_id
+        WHERE
+            user_id = #{userID}
+          AND c.deleted = 0
+    </select>
+</mapper>

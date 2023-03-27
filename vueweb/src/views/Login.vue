@@ -117,7 +117,7 @@ body {
 .login_text {
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: flex-end;
     margin-bottom: 30px;
 }
 </style>
