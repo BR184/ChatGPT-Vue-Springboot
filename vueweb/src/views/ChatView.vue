@@ -17,26 +17,42 @@
             <el-col style="height: 100%;" :span="20">
                 <el-row class="chat_area">
                     <el-col :span="24">
-                        
+
                     </el-col>
                 </el-row>
-                <el-row style="height: 32.5%;">
+                <el-row style="height: 32.5%">
                     <el-col :span="8" class="value_area">
-                        <span id="info">temperature 文本随机性(0-2)</span>
-                        <el-slider v-model="chat_from.temperature" id="sliderT" input-size="mini"
-                            :show-input-controls="false" show-input max="2" step="0.01" :format-tooltip="formatTooltip" />
-                        <span id="info">top_p 文本多样性(0-1)</span>
-                        <el-slider v-model="chat_from.top_p" id="sliderT" input-size="mini" :show-input-controls="false"
-                            show-input max="1" step="0.01" :format-tooltip="formatTooltip" />
-                        <span id="info">presence_penalty 内容重复度(0-1)</span>
-                        <el-slider v-model="chat_from.presence_penalty" id="sliderT" input-size="mini"
-                            :show-input-controls="false" show-input max="1" step="0.01" :format-tooltip="formatTooltip" />
-                        <span id="info">frequency_penalty 字词重复度(0-1)</span>
-                        <el-slider v-model="chat_from.frequency_penalty" id="sliderT" input-size="mini"
-                            :show-input-controls="false" show-input max="1" step="0.01" :format-tooltip="formatTooltip" />
+                        <el-scrollbar class="value_inner">
+                            <span id="info">temperature 文本随机性(0-2)</span>
+                            <el-slider v-model="chat_from.temperature" id="sliderT" input-size="mini"
+                                :show-input-controls="false" show-input :max="2" :step="0.01"
+                                 />
+                            <span id="info">top_p 文本多样性(0-1)</span>
+                            <el-slider v-model="chat_from.top_p" id="sliderT" input-size="mini" :show-input-controls="false"
+                                show-input :max="1" :step="0.01"  />
+                            <span id="info">presence_penalty 内容重复度(0-1)</span>
+                            <el-slider v-model="chat_from.presence_penalty" id="sliderT" input-size="mini"
+                                :show-input-controls="false" show-input :max="1" :step="0.01"
+                                 />
+                            <span id="info">frequency_penalty 字词重复度(0-1)</span>
+                            <el-slider v-model="chat_from.frequency_penalty" id="sliderT" input-size="mini"
+                                :show-input-controls="false" show-input :max="1" :step="0.01"
+                                 />
+                            <span id="info">AI默认设定(1000字以内)</span>
+                            <el-autocomplete class="value_choose" popper-class="my-autocomplete" v-model="state"
+                                :fetch-suggestions="querySearch" placeholder="请输入内容" @select="handleSelect">
+                                <i class="el-icon-edit el-input__icon" slot="suffix" @click="handleIconClick">
+                                </i>
+                                <template slot-scope="{ item }">
+                                    <div class="name">{{ item.value }}</div>
+                                    <span class="intro">{{ item.intro }}</span>
+                                </template>
+                            </el-autocomplete>
+                        </el-scrollbar>
                     </el-col>
                     <el-col :span="15" style="height:100%;">
-                        <el-input class="chat_input" style="height: 100%;" type="textarea" resize="none" placeholder="请输入内容" v-model="chat_from.chat_content">
+                        <el-input class="chat_input" style="height: 100%;" type="textarea" resize="none" placeholder="请输入内容"
+                            v-model="chat_from.chat_content">
                         </el-input>
                     </el-col>
                     <el-col :span="1" style="height:100%;">1</el-col>
@@ -63,14 +79,29 @@
     height: 100%;
 }
 
-.el-textarea{
-    height: 100% !important;
-    width: 100%;
+.el-input__inner:focus,
+.el-textarea__inner:focus {
+    border: 1px #e74645 solid !important;
+}
+
+el-input>.el-input__inner:focus,
+.el-textarea__inner:focus {
+    border: 1px #e74645 solid !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+    border-radius: 0 !important;
 }
 
 .el-textarea__inner,
 .el-textarea {
-  height: 100% !important;
+    height: 100% !important;
+    font-family: "Microsoft YaHei";
+    font-size: 24px !important;
+    font-weight: bold;
+    border: 1px #e6e6e6 solid !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+    border-radius: 0 !important;
 }
 
 .left_menu {
@@ -87,6 +118,28 @@
     background-color: #f5f5f5;
 }
 
+.el-scrollbar__wrap {
+    width: 105%;
+    overflow-x: hidden !important;
+    overflow-y: scroll !important;
+    ;
+}
+
+.el-scrollbar__view {
+    padding-left: 10%;
+    width: 90%;
+    height: 100%;
+}
+
+.el-slider__input {
+    width: 20% !important;
+    margin-right: 10px;
+}
+
+.el-slider__runway {
+    margin-right: 120px !important;
+}
+
 .el-slider__bar {
     background-color: #fb7756 !important;
 }
@@ -95,15 +148,31 @@
     border-color: #e74645 !important;
 }
 
+.el-scrollbar__thumb {
+    background-color: #e74645 !important;
+    border-radius: 10px !important;
+}
+
+.inline-input {
+    width: 88%;
+    float: left;
+}
+
 .value_area {
     padding-top: 10px;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    text-align: center;
-    align-items: center;
-    flex-flow: column;
+}
+
+.value_inner {
+    height: 100%;
+    width: 100%;
+}
+
+.value_choose{
+    width: 88%;
+    padding-top: 5%;
+    padding-right: 10%;
+    float: left;
 }
 
 #info {
@@ -130,10 +199,10 @@ export default {
             chat_from: {
                 chat_side: '',
                 chat_content: '',
-                temperature: 1,
-                top_p: 0,
-                presence_penalty: 0,
-                frequency_penalty: 0,
+                temperature: 1.00,
+                top_p: 0.00,
+                presence_penalty: 0.00,
+                frequency_penalty: 0.00,
                 system_persona: ''
             }
         }
@@ -152,13 +221,16 @@ export default {
             cb(results);
         },
         createFilter(queryString) {
-            return (restaurant) => {
-                return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+            return (saves) => {
+                return (saves.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
             };
         },
         loadAll() {
             return [
-
+                { "value": "You are an AI helper", "intro": "默认设定1" },
+                { "value": "You are an AI helper", "intro": "默认设定2" },
+                { "value": "You are an AI helper", "intro": "默认设定3" },
+                { "value": "You are an AI helper", "intro": "默认设定4" },
             ]
         },
         handleSelect(item) {
