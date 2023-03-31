@@ -33,6 +33,8 @@ public class Chat implements Serializable{
     //聊天发送时间
     private Date chatDate;
     //0正常1删除
-    private String deleted;
+    private Integer deleted;
+    //0正常1失效
+    private Integer enable;
 }
 

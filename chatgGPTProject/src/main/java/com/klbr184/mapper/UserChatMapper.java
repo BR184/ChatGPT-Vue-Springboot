@@ -1,5 +1,6 @@
 package com.klbr184.mapper;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.klbr184.entity.UserChat;
 import org.apache.ibatis.annotations.Mapper;

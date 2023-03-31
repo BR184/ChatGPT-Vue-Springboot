@@ -1,5 +1,6 @@
 package com.klbr184.service;
 
+import com.klbr184.req.SendMsgReq;
 import com.klbr184.resp.CommonResp;
 
 /**
@@ -11,4 +12,10 @@ public interface ChatService {
     CommonResp getChats();
 
     CommonResp addNewChat();
+
+    CommonResp sendChat(SendMsgReq sendMsgReq);
+
+    CommonResp getChatsById(Long id);
+
+    CommonResp getChatsInfoById(Long id);
 }

@@ -1,28 +1,22 @@
-package com.klbr184.entity;
+package com.klbr184.vo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 /**
- * (UserChat)表实体类
- *
- * @author makejava
- * @since 2023-03-27 17:01:39
+ * @author KL
+ * @version 1.0
+ * @since 2023-03-31 20:58:52
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserChat {
-    //用户ID
-    private Long userId;
-    //聊天ID
-    @TableId
-    private Long chatId;
+public class InfoVo {
+    @Builder.Default
+    private String system = "You are a AI helper";
     //文本随机性(0-2)
     @Builder.Default
     private Float temperature = 1f;
@@ -39,15 +33,10 @@ public class UserChat {
     private String msId;
     //OpenAI API中的Object
     private String object;
-    //OpenAI API中的Model
-    private String model;
     //OpenAI API中usage下的prompt_tokens
     private Integer usagePromptTokens;
     //OpenAI API中usage下的completion_tokens
     private Integer usageCompletionTokens;
     //OpenAI API中usage下的total_tokens
     private Integer usageTotalTokens;
-    //OpenAI API中usage下的total_tokens
-    private Integer deleted;
 }
-

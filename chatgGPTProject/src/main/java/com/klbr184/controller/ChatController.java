@@ -1,12 +1,13 @@
 package com.klbr184.controller;
 
+import com.klbr184.req.SendMsgReq;
 import com.klbr184.resp.CommonResp;
 import com.klbr184.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * @author KL
@@ -22,13 +23,31 @@ public class ChatController {
 
     @PreAuthorize("hasAuthority('default')")
     @GetMapping("all")
-    public CommonResp getChats(){
+    public CommonResp getChats() {
         return chatService.getChats();
     }
 
     @PreAuthorize("hasAuthority('default')")
+    @GetMapping("info")
+    public CommonResp getChatsInfoById(@RequestParam Long id) {
+        return chatService.getChatsInfoById(id);
+    }
+
+    @PreAuthorize("hasAuthority('default')")
+    @GetMapping
+    public CommonResp getChatsById(@RequestParam Long id) {
+        return chatService.getChatsById(id);
+    }
+
+    @PreAuthorize("hasAuthority('default')")
     @GetMapping("new")
-    public CommonResp addNewChat(){
-        return  chatService.addNewChat();
+    public CommonResp addNewChat() {
+        return chatService.addNewChat();
+    }
+
+    @PreAuthorize("hasAuthority('default')")
+    @PostMapping
+    public CommonResp sendChat(@RequestBody SendMsgReq sendMsgReq) {
+        return chatService.sendChat(sendMsgReq);
     }
 }

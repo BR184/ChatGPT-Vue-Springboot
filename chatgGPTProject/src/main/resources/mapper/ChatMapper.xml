@@ -1,13 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.klbr184.mapper.ChatMapper">
+    <resultMap id="infoMap" type="com.klbr184.vo.InfoVo">
+        <result property="system" column="chat_content"></result>
+    </resultMap>
     <select id="selectChatByUserID" resultType="com.klbr184.vo.ChatVo">
         SELECT
-            c.chat_date,c.chat_side,c.chat_content
+            c.chat_date,c.chat_side,c.chat_content,c.enable
         FROM user_chat uc
                  LEFT JOIN chat c ON uc.chat_id = c.chat_id
         WHERE
             user_id = #{userID}
           AND c.deleted = 0
+    </select>
+    <select id="selectChatByChatID" resultType="com.klbr184.vo.ChatVo">
+        SELECT
+            c.chat_date,c.chat_side,c.chat_content,c.enable
+        FROM user_chat uc
+                 LEFT JOIN chat c ON uc.chat_id = c.chat_id
+        WHERE
+            c.chat_id = #{chatID}
+          AND user_id = #{userID}
+          AND c.deleted = 0
+    </select>
+    <select id="selectChatInfoByChatID" resultType="com.klbr184.vo.InfoVo" resultMap="infoMap">
+        SELECT
+            DISTINCT c.chat_content,uc.temperature,uc.top_p,uc.presence_penalty,uc.frequency_penalty,uc.ms_id,uc.object,uc.model,uc.usage_prompt_tokens,uc.usage_completion_tokens,uc.usage_total_tokens
+        FROM user_chat uc
+                 LEFT JOIN chat c ON uc.chat_id = c.chat_id
+        WHERE
+            c.chat_id = #{chatID}
+          AND user_id = #{userID}
+          AND c.deleted = 0
+          AND c.chat_side = "system"
     </select>
 </mapper>
