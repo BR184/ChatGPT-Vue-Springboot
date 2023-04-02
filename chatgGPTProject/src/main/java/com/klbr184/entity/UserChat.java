@@ -35,10 +35,6 @@ public class UserChat {
     //字词重复度(0-1)
     @Builder.Default
     private Float frequencyPenalty = 0f;
-    //OpenAI API中的ID
-    private String msId;
-    //OpenAI API中的Object
-    private String object;
     //OpenAI API中的Model
     private String model;
     //OpenAI API中usage下的prompt_tokens

@@ -6,6 +6,8 @@ import com.unfbx.chatgpt.entity.chat.ChatChoice;
 import com.unfbx.chatgpt.entity.chat.ChatCompletion;
 import com.unfbx.chatgpt.entity.chat.ChatCompletionResponse;
 import com.unfbx.chatgpt.entity.chat.Message;
+import com.unfbx.chatgpt.entity.completions.Completion;
+import com.unfbx.chatgpt.entity.completions.CompletionResponse;
 import com.unfbx.chatgpt.interceptor.OpenAILogger;
 import com.unfbx.chatgpt.interceptor.OpenAiResponseInterceptor;
 import com.unfbx.chatgpt.sse.ConsoleEventSourceListener;
@@ -95,10 +97,14 @@ public class ChatTest {
             ChatCompletionResponse chatCompletionResponse = openAiClient.chatCompletion(chatCompletion);
             chatCompletionResponse.getChoices().forEach(e -> {
                 System.out.println(e.getMessage());
-                System.out.println(chatCompletionResponse.getUsage());
-                System.out.println(chatCompletionResponse.getCreated());
-                System.out.println(chatCompletionResponse.getId());
-                System.out.println(chatCompletionResponse.getModel());
+                System.out.println("消息："+chatCompletionResponse.getChoices().get(0).getMessage().getContent());
+                System.out.println("object："+chatCompletionResponse.getObject());
+                System.out.println("model："+chatCompletionResponse.getModel());
+                System.out.println("id："+chatCompletionResponse.getId());
+                System.out.println("created："+chatCompletionResponse.getCreated());
+                System.out.println("getPromptTokens："+chatCompletionResponse.getUsage().getPromptTokens());
+                System.out.println("getCompletionTokens："+chatCompletionResponse.getUsage().getCompletionTokens());
+                System.out.println("getTotalTokens："+chatCompletionResponse.getUsage().getTotalTokens());
             });
         } catch (Exception e) {
             System.out.println("error detected");
@@ -106,5 +112,39 @@ public class ChatTest {
         }
 
 
+    }
+    //对话测试
+    @Test
+    public void completionsV3() {
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 7890));
+        String question = "帮我把下面的文本翻译成英文；我爱你中国\n";
+        Completion q = Completion.builder()
+                .prompt(question)
+                .echo(true)
+                .build();
+        OkHttpClient okHttpClient = new OkHttpClient
+                .Builder()
+                .proxy(proxy)//自定义代理
+                .addInterceptor(new OpenAiResponseInterceptor())//自定义返回值拦截
+                .connectTimeout(10, TimeUnit.SECONDS)//自定义超时时间
+                .writeTimeout(30, TimeUnit.SECONDS)//自定义超时时间
+                .readTimeout(30, TimeUnit.SECONDS)//自定义超时时间
+                .build();
+        //构建客户端
+        OpenAiClient openAiClient = OpenAiClient.builder()
+                .apiKey(Arrays.asList("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"))
+                .okHttpClient(okHttpClient)
+                .build();
+        CompletionResponse completions = openAiClient.completions(q);
+        String text = completions.getChoices()[0].getText();
+
+        q.setPrompt(text + "\n" + "再翻译成韩文\n");
+        completions = openAiClient.completions(q);
+        text = completions.getChoices()[0].getText();
+
+        q.setPrompt(text + "\n" + "再翻译成日文\n");
+        completions = openAiClient.completions(q);
+        text = completions.getChoices()[0].getText();
+        System.out.println(text);
     }
 }

@@ -22,4 +22,6 @@ public class ChatVo{
     private String chatContent;
     //聊天发送时间
     private Date chatDate;
+
+    private int enable;
 }

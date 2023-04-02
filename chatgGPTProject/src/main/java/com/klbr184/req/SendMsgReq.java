@@ -13,11 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SendMsgReq {
+    //chatID
     private Long id;
     private String system;
     private String message;
     private Float temperature;
-    private Float top_p;
-    private Float presence_penalty;
-    private Float frequency_penalty;
+    private Float topP;
+    private Float presencePenalty;
+    private Float frequencyPenalty;
 }

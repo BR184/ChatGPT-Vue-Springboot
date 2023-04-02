@@ -39,4 +39,8 @@ public class InfoVo {
     private Integer usageCompletionTokens;
     //OpenAI API中usage下的total_tokens
     private Integer usageTotalTokens;
+    //Chat表的system对应的ID
+    private Long id;
+    //UserChat表的chatId
+    private Long chatId;
 }

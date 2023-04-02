@@ -25,7 +25,7 @@
     </select>
     <select id="selectChatInfoByChatID" resultType="com.klbr184.vo.InfoVo" resultMap="infoMap">
         SELECT
-            DISTINCT c.chat_content,uc.temperature,uc.top_p,uc.presence_penalty,uc.frequency_penalty,uc.ms_id,uc.object,uc.model,uc.usage_prompt_tokens,uc.usage_completion_tokens,uc.usage_total_tokens
+            DISTINCT c.chat_content,uc.temperature,uc.top_p,uc.presence_penalty,uc.frequency_penalty,uc.ms_id,uc.object,uc.model,uc.usage_prompt_tokens,uc.usage_completion_tokens,uc.usage_total_tokens,c.id,uc.chat_id
         FROM user_chat uc
                  LEFT JOIN chat c ON uc.chat_id = c.chat_id
         WHERE

@@ -35,4 +35,6 @@ public class MapperTest {
     public void TestPermissionMapper(){
         System.out.println(permissionMapper.selectPermissionsByUserID(1636751065036918786L).toString());
     }
+    //测试接口
+
 }
