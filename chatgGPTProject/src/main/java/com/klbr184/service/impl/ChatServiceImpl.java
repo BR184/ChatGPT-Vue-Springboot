@@ -11,6 +11,7 @@ import com.klbr184.resp.CommonResp;
 import com.klbr184.service.ChatService;
 import com.klbr184.utils.MessageBuilderUtil;
 import com.klbr184.utils.SecurityUtil;
+import com.klbr184.vo.ChatListVo;
 import com.klbr184.vo.ChatVo;
 import com.klbr184.vo.InfoVo;
 import com.unfbx.chatgpt.OpenAiClient;
@@ -49,6 +50,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public CommonResp getChatsById(Long id) {
         List<ChatVo> list = chatMapper.selectChatByChatID(id,SecurityUtil.getUserId());
+        list.removeIf(chatVo -> chatVo.getChatSide().equals("system"));
         return new CommonResp<List>(200,"操作成功",list);
     }
 
@@ -59,11 +61,25 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public CommonResp addNewChat() {
+    public CommonResp getChatsList() {
+        List<ChatListVo> chatListVos = chatMapper.selectChatListByUserID(SecurityUtil.getUserId());
+        return new CommonResp<>(200,"操作成功",chatListVos);
+    }
+
+    @Override
+    public CommonResp getChatsExcludeSystem() {
+        List<ChatVo> list = chatMapper.selectChatByUserID(SecurityUtil.getUserId());
+        list.removeIf(chatVo -> chatVo.getChatSide().equals("system"));
+        return new CommonResp<List>(200,"操作成功",list);
+    }
+
+    @Override
+    public CommonResp addNewChat(String title) {
         Long chatID = IdUtil.getSnowflakeNextId();
         UserChat userChat = new UserChat();
         userChat.setUserId(SecurityUtil.getUserId());
         userChat.setChatId(chatID);
+        userChat.setTitle(title);
         userChatMapper.insert(userChat);
         Chat chat = new Chat();
         chat.setChatId(chatID)
@@ -91,7 +107,6 @@ public class ChatServiceImpl implements ChatService {
         UserChat newUC = new UserChat();
         BeanUtil.copyProperties(sendMsgReq,newUC, "system","message");
         newUC.setChatId(oldInfoVo.getChatId());
-        System.out.println(newUC);
         userChatMapper.updateById(newUC);
         //获取数据库聊天内容
         List<ChatVo> chatVo = chatMapper.selectChatByChatID(sendMsgReq.getId(),SecurityUtil.getUserId());
@@ -139,7 +154,7 @@ public class ChatServiceImpl implements ChatService {
             //把chatCompletionResponse返回的内容存入数据库
             //先是gpt回复的消息
             Chat responseChat = new Chat();
-            responseChat.setChatId(oldInfoVo.getId())
+            responseChat.setChatId(sendMsgReq.getId())
                     .setChatSide("gpt")
                     .setChatContent(chatCompletionResponse.getChoices().get(0).getMessage().getContent())
                     .setChatDate(DateUtil.offsetSecond(DateUtil.date(),1));

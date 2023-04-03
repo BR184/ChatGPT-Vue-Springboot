@@ -1,5 +1,7 @@
 package com.klbr184.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,10 +31,6 @@ public class InfoVo {
     //字词重复度(0-1)
     @Builder.Default
     private Float frequencyPenalty = 0f;
-    //OpenAI API中的ID
-    private String msId;
-    //OpenAI API中的Object
-    private String object;
     //OpenAI API中usage下的prompt_tokens
     private Integer usagePromptTokens;
     //OpenAI API中usage下的completion_tokens
@@ -40,7 +38,9 @@ public class InfoVo {
     //OpenAI API中usage下的total_tokens
     private Integer usageTotalTokens;
     //Chat表的system对应的ID
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     //UserChat表的chatId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long chatId;
 }

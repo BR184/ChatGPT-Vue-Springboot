@@ -34,4 +34,12 @@
           AND c.deleted = 0
           AND c.chat_side = "system"
     </select>
+    <select id="selectChatListByUserID" resultType="com.klbr184.vo.ChatListVo">
+        SELECT
+            uc.title,uc.chat_id
+        FROM
+            user_chat uc
+        WHERE
+            uc.user_id = #{userID}
+    </select>
 </mapper>

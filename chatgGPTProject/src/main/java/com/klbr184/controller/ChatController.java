@@ -27,13 +27,25 @@ public class ChatController {
     public CommonResp getChats() {
         return chatService.getChats();
     }
+    //获取排除system的聊天记录
+    @PreAuthorize("hasAuthority('default')")
+    @PostMapping("all")
+    public CommonResp getChatsExcludeSystem() {
+        return chatService.getChatsExcludeSystem();
+    }
+    //获取聊天列表
+    @PreAuthorize("hasAuthority('default')")
+    @GetMapping("list")
+    public CommonResp getChatsList() {
+        return chatService.getChatsList();
+    }
     //获取聊天参数
     @PreAuthorize("hasAuthority('default')")
     @GetMapping("info")
     public CommonResp getChatsInfoById(@RequestParam Long id) {
         return chatService.getChatsInfoById(id);
     }
-    //获取聊天记录
+    //获取聊天记录通过chatId
     @PreAuthorize("hasAuthority('default')")
     @GetMapping
     public CommonResp getChatsById(@RequestParam Long id) {
@@ -42,8 +54,8 @@ public class ChatController {
     //创建新聊天
     @PreAuthorize("hasAuthority('default')")
     @GetMapping("new")
-    public CommonResp addNewChat() {
-        return chatService.addNewChat();
+    public CommonResp addNewChat(String title) {
+        return chatService.addNewChat(title);
     }
     //发送消息
     @PreAuthorize("hasAuthority('default')")

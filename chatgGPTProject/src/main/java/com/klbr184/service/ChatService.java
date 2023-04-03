@@ -11,11 +11,15 @@ import com.klbr184.resp.CommonResp;
 public interface ChatService {
     CommonResp getChats();
 
-    CommonResp addNewChat();
+    CommonResp addNewChat(String title);
 
     CommonResp sendChat(SendMsgReq sendMsgReq);
 
     CommonResp getChatsById(Long id);
 
     CommonResp getChatsInfoById(Long id);
+
+    CommonResp getChatsList();
+
+    CommonResp getChatsExcludeSystem();
 }

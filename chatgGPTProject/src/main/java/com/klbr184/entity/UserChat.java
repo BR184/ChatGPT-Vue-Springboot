@@ -23,6 +23,8 @@ public class UserChat {
     //聊天ID
     @TableId
     private Long chatId;
+    //聊天标题
+    private String title;
     //文本随机性(0-2)
     private Float temperature;
     //文本多样性(0-1)

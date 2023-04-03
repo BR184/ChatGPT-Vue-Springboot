@@ -123,6 +123,7 @@ export default {
   padding: 0;
   height: 60px;
   caret-color: transparent;
+  overflow: hidden;
 }
 
 .user_info {
