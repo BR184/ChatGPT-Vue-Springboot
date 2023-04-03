@@ -21,38 +21,41 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
+    //获取所有聊天记录
     @PreAuthorize("hasAuthority('default')")
     @GetMapping("all")
     public CommonResp getChats() {
         return chatService.getChats();
     }
-
+    //获取聊天参数
     @PreAuthorize("hasAuthority('default')")
     @GetMapping("info")
     public CommonResp getChatsInfoById(@RequestParam Long id) {
         return chatService.getChatsInfoById(id);
     }
-
+    //获取聊天记录
     @PreAuthorize("hasAuthority('default')")
     @GetMapping
     public CommonResp getChatsById(@RequestParam Long id) {
         return chatService.getChatsById(id);
     }
-
+    //创建新聊天
     @PreAuthorize("hasAuthority('default')")
     @GetMapping("new")
     public CommonResp addNewChat() {
         return chatService.addNewChat();
     }
-
+    //发送消息
     @PreAuthorize("hasAuthority('default')")
     @PostMapping
     public CommonResp sendChat(@RequestBody SendMsgReq sendMsgReq) {
         return chatService.sendChat(sendMsgReq);
     }
-
-    //
-
-
+    //删除聊天记录
+    @PreAuthorize("hasAuthority('default')")
+    @DeleteMapping
+    public CommonResp deleteChat(@RequestParam Long id) {
+        return null;//chatService.deleteChat(id);
+    }
 
 }

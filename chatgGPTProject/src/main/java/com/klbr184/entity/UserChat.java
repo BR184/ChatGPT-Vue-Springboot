@@ -24,17 +24,13 @@ public class UserChat {
     @TableId
     private Long chatId;
     //文本随机性(0-2)
-    @Builder.Default
-    private Float temperature = 1f;
+    private Float temperature;
     //文本多样性(0-1)
-    @Builder.Default
-    private Float topP = 1f;
+    private Float topP;
     //内容重复度(0-1)
-    @Builder.Default
-    private Float presencePenalty = 0f;
+    private Float presencePenalty;
     //字词重复度(0-1)
-    @Builder.Default
-    private Float frequencyPenalty = 0f;
+    private Float frequencyPenalty;
     //OpenAI API中的Model
     private String model;
     //OpenAI API中usage下的prompt_tokens

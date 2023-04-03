@@ -76,7 +76,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public CommonResp sendChat(SendMsgReq sendMsgReq) {
-        System.out.println(sendMsgReq.toString());
+        //TODO 检测用户余额
         //获取数据库原本数据
         InfoVo oldInfoVo = chatMapper.selectChatInfoByChatID(sendMsgReq.getId(), SecurityUtil.getUserId());
         //查看system有无更改，有更改则更新
@@ -91,13 +91,15 @@ public class ChatServiceImpl implements ChatService {
         UserChat newUC = new UserChat();
         BeanUtil.copyProperties(sendMsgReq,newUC, "system","message");
         newUC.setChatId(oldInfoVo.getChatId());
+        System.out.println(newUC);
         userChatMapper.updateById(newUC);
+        //获取数据库聊天内容
         List<ChatVo> chatVo = chatMapper.selectChatByChatID(sendMsgReq.getId(),SecurityUtil.getUserId());
         //获取数据库新的数据
         InfoVo newInfoVo = chatMapper.selectChatInfoByChatID(sendMsgReq.getId(), SecurityUtil.getUserId());
         //使用MessageBuilderUtil工具类构建Message
         List<Message> messageList = MessageBuilderUtil.buildMessage(chatVo, sendMsgReq.getMessage());
-        //TODO 把数据库里的内容拿出来依次填入以下地方
+        String message;
         try {
             //国内访问需要做代理，国外服务器不需要
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 7890));
@@ -113,6 +115,7 @@ public class ChatServiceImpl implements ChatService {
                     .build();
             //构建客户端
             OpenAiClient openAiClient = OpenAiClient.builder()
+                    //TODO apiKey相关的数据库操作
                     .apiKey(Arrays.asList("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"))
                     .okHttpClient(okHttpClient)
                     .build();
@@ -132,26 +135,31 @@ public class ChatServiceImpl implements ChatService {
                     .setChatSide("user")
                     .setChatContent(sendMsgReq.getMessage())
                     .setChatDate(DateUtil.date());
+            chatMapper.insert(userChat);
             //把chatCompletionResponse返回的内容存入数据库
             //先是gpt回复的消息
             Chat responseChat = new Chat();
-            responseChat.setChatId(sendMsgReq.getId())
+            responseChat.setChatId(oldInfoVo.getId())
                     .setChatSide("gpt")
                     .setChatContent(chatCompletionResponse.getChoices().get(0).getMessage().getContent())
                     .setChatDate(DateUtil.offsetSecond(DateUtil.date(),1));
+            chatMapper.insert(responseChat);
             //再是user_chat里的内容：object,消息ID,tokens的占用情况
             UserChat responseUC = UserChat.builder()
                     .chatId(sendMsgReq.getId())
+                    .usagePromptTokens((int) chatCompletionResponse.getUsage().getPromptTokens())
+                    .usageCompletionTokens((int) chatCompletionResponse.getUsage().getCompletionTokens())
+                    .usageTotalTokens((int) chatCompletionResponse.getUsage().getTotalTokens())
                     .build();
-            System.out.println(chatCompletionResponse.toString());
+            //更新user_chat里的内容
+            userChatMapper.updateById(responseUC);
+            //消息处理完毕,更新message
+            message = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
         } catch (Exception e) {
             System.out.println("error detected");
             throw new RuntimeException(e);
         }
-
-
-
-        return null;
+        //返回gpt发的消息
+        return new CommonResp<String>(200,"操作成功",message);
     }
-
 }
