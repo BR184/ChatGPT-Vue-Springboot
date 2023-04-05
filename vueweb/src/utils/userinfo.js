@@ -11,3 +11,7 @@ export function getUser(){
 export function removeUser(){
     localStorage.removeItem(storageKey)
 }
+
+export function getAvaPerfix(){
+    return "https://kl-gpt.oss-cn-beijing.aliyuncs.com/avatar/"
+}

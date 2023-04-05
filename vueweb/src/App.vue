@@ -9,12 +9,12 @@
         </el-col>
         <el-col :span="7">
           <!-- 菜单 -->
-          <el-menu class="meun" :default-active="activeIndex" mode="horizontal" background-color="transparent"
+          <el-menu class="meun" :default-active="activeIndex" mode="horizontal" background-color=#fff
             active-text-color="#e74645" style="height: 100%;" :router="true">
             <el-menu-item index="/index">首页</el-menu-item>
             <el-submenu index="2">
               <template index="/explore" slot="title">探索</template>
-              <el-menu-item index="2-1" rout>选项1</el-menu-item>
+              <el-menu-item index="2-1">选项1</el-menu-item>
               <el-menu-item index="2-2">选项2</el-menu-item>
               <el-menu-item index="2-3">选项3</el-menu-item>
             </el-submenu>
@@ -33,14 +33,13 @@
           <!-- 头像和菜单 -->
           <div v-if="this.$getToken()" class="head">
             <el-dropdown trigger="hover">
-              <el-avatar src="avatar.png"></el-avatar>
+              <el-avatar :src="this.$getHead" @click.native="home"></el-avatar>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>个人中心</el-dropdown-item>
-                <el-dropdown-item>设置</el-dropdown-item>
+                <el-dropdown-item @click.native="home">个人中心</el-dropdown-item>
                 <el-dropdown-item @click.native="logout">登出</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <p style="margin-left:10px">{{this.$getUser().username}}</p>
+            <p style="margin-left:15px">{{this.$getUser().username}}</p>
           </div>
           <el-button type="danger" size="small" v-else @click="login">登录</el-button>
         </el-col>
@@ -61,6 +60,9 @@ export default {
     nav_show: true
   }),
   methods: {
+    home() {
+      this.$router.push({ path: '/home' })
+    },
     login() {
       this.$router.push({ path: '/login' })
     },
@@ -99,6 +101,7 @@ export default {
 }
 
 .nav {
+  position: fixed;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -107,6 +110,7 @@ export default {
   height: 60px;
   min-width: 900px;
   background-color: transparent;
+  overflow: hidden;
 }
 
 .meun {

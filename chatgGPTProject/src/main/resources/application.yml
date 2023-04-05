@@ -17,3 +17,13 @@ spring:
   redis:
     password: root
     host: 192.168.88.130
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 5MB
+#TODO 敏感数据
+oss:
+  accessKeyId: LTAI5tJ6KGR9uj5PsgAFMEnW
+  accessKeySecret: IU1ifEN6xKYnTreIAtagras2oOXNPH
+  bucketName: kl-gpt
+  endpoint: https://oss-cn-beijing.aliyuncs.com

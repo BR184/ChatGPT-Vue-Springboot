@@ -11,7 +11,7 @@ import VueAxios from 'vue-axios';
 
 import { debounce } from "./utils/debounce.js";
 import { saveToken, getToken, removeToken } from "./utils/token.js";
-import { saveUser, getUser, removeUser } from "./utils/userinfo";
+import { saveUser, getUser, removeUser,getAvaPerfix } from "./utils/userinfo";
 
 Vue.config.productionTip = false;
 //安装elementui
@@ -28,6 +28,7 @@ Vue.prototype.$removeToken = removeToken;
 Vue.prototype.$saveUser = saveUser;
 Vue.prototype.$getUser = getUser;
 Vue.prototype.$removeUser = removeUser;
+Vue.prototype.$getHead = getAvaPerfix()+getUser().head;
 
 router.beforeEach((to, from, next) => {
   if (localStorage.getItem("Token") && !localStorage.getItem("User")) {

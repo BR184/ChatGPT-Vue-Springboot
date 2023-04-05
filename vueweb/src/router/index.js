@@ -6,14 +6,16 @@ import Register from '../views/Register.vue'
 import Index from '../views/IndexView.vue'
 import Logout from '../views/Logout.vue'
 import Chat from '../views/ChatView.vue'
+import UserInfo from '../views/UserInfo.vue'
+import FavSys from '../views/FavSys.vue'
+import FavChat from '../views/FavChat.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Index',
-    component: Index
+    redirect: '/index'
   },
   {
     path: '/index',
@@ -38,7 +40,13 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: Home
+    component: Home,
+    children:[
+      {path:'',redirect:'info'},
+      {path:'info',component:UserInfo},
+      {path:'fav_sys',component:FavSys},
+      {path:'fav_chat',component:FavChat}
+    ]
   },
   {
     path: '/about',

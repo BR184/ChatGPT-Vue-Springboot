@@ -1,4 +1,5 @@
 package com.klbr184.service.impl;
+
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
@@ -24,10 +25,15 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,6 +42,7 @@ import java.util.concurrent.TimeUnit;
  * @since 2023-03-27 11:57:42
  */
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class ChatServiceImpl implements ChatService {
     @Autowired
     private ChatMapper chatMapper;
@@ -45,32 +52,57 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public CommonResp getChats() {
         List<ChatVo> list = chatMapper.selectChatByUserID(SecurityUtil.getUserId());
-        return new CommonResp<List>(200,"操作成功",list);
+        return new CommonResp<List>(200, "操作成功", list);
     }
+
     @Override
     public CommonResp getChatsById(Long id) {
-        List<ChatVo> list = chatMapper.selectChatByChatID(id,SecurityUtil.getUserId());
+        List<ChatVo> list = chatMapper.selectChatByChatID(id, SecurityUtil.getUserId());
         list.removeIf(chatVo -> chatVo.getChatSide().equals("system"));
-        return new CommonResp<List>(200,"操作成功",list);
+        return new CommonResp<List>(200, "操作成功", list);
     }
 
     @Override
     public CommonResp getChatsInfoById(Long id) {
-        InfoVo infoVo = chatMapper.selectChatInfoByChatID(id,SecurityUtil.getUserId());
-        return new CommonResp<>(200,"操作成功",infoVo);
+        InfoVo infoVo = chatMapper.selectChatInfoByChatID(id, SecurityUtil.getUserId());
+        return new CommonResp<>(200, "操作成功", infoVo);
     }
 
     @Override
     public CommonResp getChatsList() {
         List<ChatListVo> chatListVos = chatMapper.selectChatListByUserID(SecurityUtil.getUserId());
-        return new CommonResp<>(200,"操作成功",chatListVos);
+        return new CommonResp<>(200, "操作成功", chatListVos);
     }
 
     @Override
     public CommonResp getChatsExcludeSystem() {
         List<ChatVo> list = chatMapper.selectChatByUserID(SecurityUtil.getUserId());
         list.removeIf(chatVo -> chatVo.getChatSide().equals("system"));
-        return new CommonResp<List>(200,"操作成功",list);
+        return new CommonResp<List>(200, "操作成功", list);
+    }
+
+    @Override
+    public CommonResp deleteChat(Long id) {
+        try {
+            //判断是否属于该用户
+            if (userChatMapper.selectById(id).getUserId().equals(SecurityUtil.getUserId())
+                    && chatMapper.selectChatByChatID(id, SecurityUtil.getUserId()).size() > 0) {
+                try {
+                    userChatMapper.deleteById(id);
+                    Map<String,Object> map = new HashMap<>();
+                    map.put("chat_ID",id);
+                    chatMapper.deleteByMap(map);
+                }catch (Exception e) {
+                    return new CommonResp<>(500, "操作失败", null);
+                }
+            }else {
+                return new CommonResp<>(403, "操作失败!你没有足够的权限!", null);
+            }
+            return new CommonResp<>(200, "操作成功", null);
+
+        } catch (Exception e) {
+            return new CommonResp<>(500, "操作失败", null);
+        }
     }
 
     @Override
@@ -87,7 +119,7 @@ public class ChatServiceImpl implements ChatService {
                 .setChatContent("You are a AI helper")
                 .setChatDate(DateUtil.date());
         chatMapper.insert(chat);
-        return new CommonResp<>(200,"操作成功",null);
+        return new CommonResp<>(200, "操作成功", null);
     }
 
     @Override
@@ -96,8 +128,8 @@ public class ChatServiceImpl implements ChatService {
         //获取数据库原本数据
         InfoVo oldInfoVo = chatMapper.selectChatInfoByChatID(sendMsgReq.getId(), SecurityUtil.getUserId());
         //查看system有无更改，有更改则更新
-        if(oldInfoVo.getSystem().equals(sendMsgReq.getSystem())){}
-        else {
+        if (oldInfoVo.getSystem().equals(sendMsgReq.getSystem())) {
+        } else {
             Chat newC = new Chat();
             newC.setChatContent(sendMsgReq.getSystem());
             newC.setId(oldInfoVo.getId());
@@ -105,11 +137,11 @@ public class ChatServiceImpl implements ChatService {
         }
         //更新user_chat里的内容
         UserChat newUC = new UserChat();
-        BeanUtil.copyProperties(sendMsgReq,newUC, "system","message");
+        BeanUtil.copyProperties(sendMsgReq, newUC, "system", "message");
         newUC.setChatId(oldInfoVo.getChatId());
         userChatMapper.updateById(newUC);
         //获取数据库聊天内容
-        List<ChatVo> chatVo = chatMapper.selectChatByChatID(sendMsgReq.getId(),SecurityUtil.getUserId());
+        List<ChatVo> chatVo = chatMapper.selectChatByChatID(sendMsgReq.getId(), SecurityUtil.getUserId());
         //获取数据库新的数据
         InfoVo newInfoVo = chatMapper.selectChatInfoByChatID(sendMsgReq.getId(), SecurityUtil.getUserId());
         //使用MessageBuilderUtil工具类构建Message
@@ -131,6 +163,7 @@ public class ChatServiceImpl implements ChatService {
             //构建客户端
             OpenAiClient openAiClient = OpenAiClient.builder()
                     //TODO apiKey相关的数据库操作
+                    //TODO 敏感数据
                     .apiKey(Arrays.asList("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"))
                     .okHttpClient(okHttpClient)
                     .build();
@@ -157,7 +190,7 @@ public class ChatServiceImpl implements ChatService {
             responseChat.setChatId(sendMsgReq.getId())
                     .setChatSide("gpt")
                     .setChatContent(chatCompletionResponse.getChoices().get(0).getMessage().getContent())
-                    .setChatDate(DateUtil.offsetSecond(DateUtil.date(),1));
+                    .setChatDate(DateUtil.offsetSecond(DateUtil.date(), 1));
             chatMapper.insert(responseChat);
             //再是user_chat里的内容：object,消息ID,tokens的占用情况
             UserChat responseUC = UserChat.builder()
@@ -175,6 +208,6 @@ public class ChatServiceImpl implements ChatService {
             throw new RuntimeException(e);
         }
         //返回gpt发的消息
-        return new CommonResp<String>(200,"操作成功",message);
+        return new CommonResp<String>(200, "操作成功", message);
     }
 }

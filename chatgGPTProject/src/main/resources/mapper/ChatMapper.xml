@@ -41,5 +41,6 @@
             user_chat uc
         WHERE
             uc.user_id = #{userID}
+          AND uc.deleted = 0
     </select>
 </mapper>

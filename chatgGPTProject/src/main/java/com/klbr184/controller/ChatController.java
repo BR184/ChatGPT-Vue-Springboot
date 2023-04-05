@@ -67,7 +67,7 @@ public class ChatController {
     @PreAuthorize("hasAuthority('default')")
     @DeleteMapping
     public CommonResp deleteChat(@RequestParam Long id) {
-        return null;//chatService.deleteChat(id);
+        return chatService.deleteChat(id);
     }
 
 }

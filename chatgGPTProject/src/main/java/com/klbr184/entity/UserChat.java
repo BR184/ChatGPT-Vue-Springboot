@@ -21,7 +21,7 @@ public class UserChat {
     //用户ID
     private Long userId;
     //聊天ID
-    @TableId
+    @TableId(value = "chat_id")
     private Long chatId;
     //聊天标题
     private String title;

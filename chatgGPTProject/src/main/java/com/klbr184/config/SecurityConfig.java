@@ -1,12 +1,10 @@
 package com.klbr184.config;
 
 import com.klbr184.fliter.JwtAuthenticationTokenFilter;
-import com.klbr184.handler.AccessDeniedHandlerImpl;
-import com.klbr184.handler.AuthenticationEntryPointImpl;
+import com.klbr184.handler.security.AccessDeniedHandlerImpl;
+import com.klbr184.handler.security.AuthenticationEntryPointImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;

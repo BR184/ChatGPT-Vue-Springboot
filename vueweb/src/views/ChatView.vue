@@ -6,9 +6,17 @@
                     @close="handleClose" background-color="transparent" text-color="#909399" active-text-color="#e74645">
                     <!-- v-for遍历 el-menu-item -->
                     <el-menu-item v-for="(item, i) in chatList" :key="item.chatID" :index="i.toString()"
-                        @click="getChatInfoAndContent(item.chatID)">
+                        @click="getChatInfoAndContent(item.chatID)" class="chat-menu">
                         <i class="el-icon-menu"></i>
                         <span slot="title">{{ item.title }}</span>
+                        <i class="el-icon-delete delete-button" @click="deleteChat(item.chatID)"></i>
+                    </el-menu-item>
+                    <!-- 新增聊天 -->
+                    <el-menu-item>
+                        <div style="border-top:1px dashed #909399;margin:0 10px 0 10px" @click="addNewChat()">
+                            <i class="el-icon-plus"></i>
+                            <span slot="title">新增聊天</span>
+                        </div>
                     </el-menu-item>
                 </el-menu>
             </el-col>
@@ -21,7 +29,7 @@
                             <div class="chat_box_container">
                                 {{ item.chatContent }}
                             </div>
-                            <img v-if="item.chatSide == 'user'" src="../assets/GPTlogo.png" class="user_head" />
+                            <img v-if="item.chatSide == 'user'" src="https://kl-gpt.oss-cn-beijing.aliyuncs.com/avatar/senko.png" class="user_head" />
                         </div>
                         <div style="height:50px"></div>
                     </el-scrollbar>
@@ -66,7 +74,7 @@
                         </el-col>
                         <el-col style="height:90%">
                             <!-- 使用tempMsg接收el-input的消息 -->
-                            <el-input class="chat_input" style="height: 100%;width:90%" type="textarea" resize="none"
+                            <el-input :disabled="inputDisabled" class="chat_input" style="height: 100%;width:90%" type="textarea" resize="none"
                                 placeholder="请输入内容" v-model="tempMsg" @keydown.ctrl.enter="sendMsg()">
                             </el-input>
                         </el-col>
@@ -88,7 +96,28 @@
     border: 1px solid red;
     background-position: center;
 }*/
+html{
+    overflow: hidden;
+}
+.delete-button{
+    position: relative;
+    top: 35%;
+    float: right;
+    opacity: 0;
+    transition: all 0.3s;
+}
 
+.delete-button:hover{
+    color: #e74645;
+}
+
+.chat-menu:hover .delete-button{
+    opacity: 1;
+}
+
+.chat-menu{
+    user-select: none;
+}
 .chat_box_assistant {
     display: flex;
     flex-direction: row;
@@ -153,6 +182,7 @@
 .el-input__inner:focus,
 .el-textarea__inner:focus {
     border: 1px #e74645 solid !important;
+    
 }
 
 el-input>.el-input__inner:focus,
@@ -266,6 +296,8 @@ el-input>.el-input__inner:focus,
 .chat_input {
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
+    background-position: center;
 }
 
 #info {
@@ -287,6 +319,7 @@ span {
 export default {
     data() {
         return {
+            inputDisabled: false,
             chatList: [],
             chatContent: [],
             chatInfo: [],
@@ -319,6 +352,81 @@ export default {
         }
     },
     methods: {
+        //新增聊天
+        addNewChat() {
+            //输入聊天标题
+            this.$prompt('请输入聊天标题', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputPattern: /^[\u4e00-\u9fa5_a-zA-Z0-9]+$/,
+                inputErrorMessage: '聊天标题只能是中文、英文、数字和下划线'
+            }).then(({ value }) => {
+                //axios使用get方法保存对话的参数
+                this.axios.get('/chat/new?title=' + value)
+                    .then(response => {
+                        let data = response.data;
+                        //判断是否保存成功
+                        if (data.code == 200) {
+                            this.$message({
+                                message: "添加成功！",
+                                type: "success"
+                            });
+                            //刷新聊天列表
+                            this.created();
+                        } else {
+                            this.$message({
+                                message: "添加失败！",
+                                type: "error"
+                            });
+                        }
+                    },)
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '取消新增'
+                });
+            });
+        },
+        //删除聊天
+        deleteChat(chatID) {
+            //再次确认是否删除
+            this.$confirm('此操作将永久删除该聊天, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                //axios使用delete方法删除对话
+            this.axios.delete('/chat?id=' + chatID)
+                .then(response => {
+                    let data = response.data;
+                    //判断是否删除成功
+                    if (data.code == 200) {
+                        this.$message({
+                            message: "删除成功！",
+                            type: "success"
+                        });
+                        //刷新聊天列表
+                        this.created();
+                    } else {
+                        this.$message({
+                            message: "删除失败！",
+                            type: "error"
+                        });
+                    }
+                },).catch(() => {
+                    this.$message({
+                        type: 'error',
+                        message: '删除失败！请检查网络连接！'
+                    });
+                });
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
+        },
+        //获取聊天信息和内容
         getChatInfoAndContent(chatID) {
             //axios使用get方法获取保存对话的参数
             this.axios.get('/chat/info/?id=' + chatID)
@@ -332,7 +440,7 @@ export default {
                     this.chat_from.presencePenalty = this.chatInfo.presence_penalty;
                     this.chat_from.frequencyPenalty = this.chatInfo.frequency_penalty;
                     this.chat_from.system = this.chatInfo.system;
-                    this.percentage = parseFloat((this.chatInfo.usageTotalTokens / 4096 * 100 * 2).toFixed(2));
+                    this.percentage = parseFloat((this.chatInfo.usageTotalTokens / 4096 * 100 * 2).toFixed(2))>100?100:parseFloat((this.chatInfo.usageTotalTokens / 4096 * 100 * 2).toFixed(2));
                 })
                 .catch(error => {
                     console.log(error);
@@ -355,36 +463,25 @@ export default {
                     this.chatList = response.data.data;
                     //如果有保存的对话则获取第一个对话的信息
                     if (this.chatList != null) {
-                        //axios使用get方法获取保存对话的参数
-                        this.axios.get('/chat/info/?id=' + this.chatList[0].chatID)
-                            .then(response => {
-                                this.chatInfo = response.data.data;
-                                this.chat_from.id = this.chatInfo.chatId;
-                                this.chat_from.temperature = this.chatInfo.temperature;
-                                this.chat_from.top_p = this.chatInfo.top_p;
-                                this.chat_from.presence_penalty = this.chatInfo.presence_penalty;
-                                this.chat_from.frequency_penalty = this.chatInfo.frequency_penalty;
-                                this.chat_from.system = this.chatInfo.system;
-                                this.percentage = parseFloat((this.chatInfo.usageTotalTokens / 4096 * 100).toFixed(2));
-                            })
-                            .catch(error => {
-                                console.log(error);
-                            });
-                        //axios使用get方法获取保存的对话
-                        this.axios.get('/chat/?id=' + this.chatList[0].chatID)
-                            .then(response => {
-                                this.chatContent = response.data.data;
-                            })
-                            .catch(error => {
-                                console.log(error);
-                            });
+                        this.getChatInfoAndContent(this.chatList[0].chatID);
                     }
                 })
                 .catch(error => {
                     console.log(error);
                 });
         },
+        //发送消息
         sendMsg() {
+            //如果token占用达到100%则不允许发送消息
+            if (this.percentage == 100) {
+                this.$message({
+                    message: "Token占用已满，无法发送消息！",
+                    type: "error"
+                });
+                return;
+            }
+            //禁用输入框
+            this.inputDisabled = true;
             this.chat_from.message = this.tempMsg;
             this.tempMsg = '';
             const newChat = {
@@ -396,23 +493,34 @@ export default {
             this.$nextTick(() => {
                 this.$refs.scrollbar.wrap.scrollTop = this.$refs.scrollbar.wrap.scrollHeight;
             });
-            //axios使用post方法发送对话,并且设置超时时间为30秒
-            this.axios.post('/chat', this.chat_from, { timeout: 1000 * 30 })
+            //axios使用post方法发送对话,并且设置超时时间为60秒
+            this.axios.post('/chat', this.chat_from, { timeout: 1000 * 60 })
                 .then(response => {
                     this.chat_from.message = '';
                     let data = response.data;
                     if (data.code == 200) {
                         this.getChatInfoAndContent(this.chatInfo.chatId);
-                        //等待1秒后自动滚动到底部
+                        //等待200毫秒后自动滚动到底部
                         setTimeout(() => {
                             this.$nextTick(() => {
+                                this.inputDisabled = false;
                                 this.$refs.scrollbar.wrap.scrollTop = this.$refs.scrollbar.wrap.scrollHeight;
                             });
-                        }, 1000);
+                        }, 200);
+                    }else{
+                        this.inputDisabled = false;
+                        this.$message({
+                            message: "消息发送失败!错误代码：" + data.code,
+                            type: "error"
+                        });
                     }
                 })
                 .catch(error => {
-                    console.log(error);
+                    this.inputDisabled = false;
+                    this.$message({
+                            message: "消息发送失败!错误代码：" + error.code,
+                            type: "error"
+                        });
                 });
         },
         //提示框

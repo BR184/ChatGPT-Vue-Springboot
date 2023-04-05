@@ -55,6 +55,9 @@ public class ChatTest {
 //        Request request = new Request.Builder()
 //                .url("https://api.openai.com/v1/completions")
 //                .method("POST", body)
+
+//TODO 敏感数据
+
 //                .addHeader("Authorization", "Bearer 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")
 //                .addHeader("Content-Type", "application/json")
 //                .build();
@@ -88,6 +91,7 @@ public class ChatTest {
                     .build();
             //构建客户端
             OpenAiClient openAiClient = OpenAiClient.builder()
+                    //TODO 敏感数据
                     .apiKey(Arrays.asList("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"))
                     .okHttpClient(okHttpClient)
                     .build();
@@ -132,6 +136,7 @@ public class ChatTest {
                 .build();
         //构建客户端
         OpenAiClient openAiClient = OpenAiClient.builder()
+                //TODO 敏感数据
                 .apiKey(Arrays.asList("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"))
                 .okHttpClient(okHttpClient)
                 .build();
