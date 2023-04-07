@@ -798,8 +798,8 @@ export default {
             this.$nextTick(() => {
                 this.$refs.scrollbar.wrap.scrollTop = this.$refs.scrollbar.wrap.scrollHeight;
             });
-            //axios使用post方法发送对话,并且设置超时时间为60秒
-            this.axios.post('/chat', this.chat_from, { timeout: 1000 * 60 })
+            //axios使用post方法发送对话,并且设置超时时间为120秒
+            this.axios.post('/chat', this.chat_from, { timeout: 1000 * 120 })
                 .then(response => {
                     this.chat_from.message = '';
                     let data = response.data;
