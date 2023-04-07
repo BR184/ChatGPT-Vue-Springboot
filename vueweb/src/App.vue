@@ -12,12 +12,7 @@
           <el-menu class="meun" :default-active="activeIndex" mode="horizontal" background-color=#fff
             active-text-color="#e74645" style="height: 100%;" :router="true">
             <el-menu-item index="/index">首页</el-menu-item>
-            <el-submenu index="2">
-              <template index="/explore" slot="title">探索</template>
-              <el-menu-item index="2-1">选项1</el-menu-item>
-              <el-menu-item index="2-2">选项2</el-menu-item>
-              <el-menu-item index="2-3">选项3</el-menu-item>
-            </el-submenu>
+            <el-menu-item index="/explore">探索</el-menu-item>
             <el-menu-item index="3">分享</el-menu-item>
           </el-menu>
         </el-col>
@@ -33,7 +28,7 @@
           <!-- 头像和菜单 -->
           <div v-if="this.$getToken()" class="head">
             <el-dropdown trigger="hover">
-              <el-avatar :src="this.$getHead" @click.native="home"></el-avatar>
+              <el-avatar :src="this.$getHead()+this.$getUser().head" @click.native="home"></el-avatar>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="home">个人中心</el-dropdown-item>
                 <el-dropdown-item @click.native="logout">登出</el-dropdown-item>
@@ -67,7 +62,6 @@ export default {
       this.$router.push({ path: '/login' })
     },
     logout() {
-      console.log()
       this.axios.get('/user/logout').then((resp) => {
         const data = resp.data
         if (data.code == 200) {
@@ -110,7 +104,6 @@ export default {
   height: 60px;
   min-width: 900px;
   background-color: transparent;
-  overflow: hidden;
 }
 
 .meun {
@@ -127,7 +120,6 @@ export default {
   padding: 0;
   height: 60px;
   caret-color: transparent;
-  overflow: hidden;
 }
 
 .user_info {

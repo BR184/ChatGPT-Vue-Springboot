@@ -109,12 +109,13 @@ export default {
             if (this.agree) {
                 this.axios.post("/user/register", this.ruleForm).then((resp) => {
                     let data = resp.data;
-                    if (data.success) {
+                    if (data.code==200) {
                         this.ruleForm = {};
                         this.$message({
-                            message: "注册成功！",
+                            message: data.message,
                             type: "success"
                         });
+
                     }else{
                         this.$message.error("注册失败！,错误代码"+data.code); 
                     }

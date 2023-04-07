@@ -1,6 +1,8 @@
 package com.klbr184.entity;
 
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserRole implements Serializable{
     //关联用户的ID
-
+    @TableId
     private Long userId;
     //关联角色的ID
     private Integer roleId;

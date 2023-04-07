@@ -21,7 +21,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserEntity {
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.INPUT)
     private Long id;
     private String username;
     private String password;

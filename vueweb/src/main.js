@@ -18,7 +18,6 @@ Vue.config.productionTip = false;
 Vue.use(ElementUI);
 //安装axios
 Vue.use(VueAxios, axios);
-
 Vue.prototype.$debounce = debounce;
 
 Vue.prototype.$saveToken = saveToken;
@@ -28,7 +27,7 @@ Vue.prototype.$removeToken = removeToken;
 Vue.prototype.$saveUser = saveUser;
 Vue.prototype.$getUser = getUser;
 Vue.prototype.$removeUser = removeUser;
-Vue.prototype.$getHead = getAvaPerfix()+getUser().head;
+Vue.prototype.$getHead = getAvaPerfix;
 
 router.beforeEach((to, from, next) => {
   if (localStorage.getItem("Token") && !localStorage.getItem("User")) {
@@ -41,7 +40,6 @@ router.beforeEach((to, from, next) => {
       }
   next()
 })
-
 new Vue({
   router,
   store,

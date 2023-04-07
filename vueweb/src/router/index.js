@@ -9,6 +9,8 @@ import Chat from '../views/ChatView.vue'
 import UserInfo from '../views/UserInfo.vue'
 import FavSys from '../views/FavSys.vue'
 import FavChat from '../views/FavChat.vue'
+import ShareView from '../views/ShareView.vue'
+import ExploreView from '../views/ExploreView.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +23,16 @@ const routes = [
     path: '/index',
     name: 'Index',
     component: Index
+  },
+  {
+    path: '/share',
+    name: 'Share',
+    component: ShareView
+  },
+  {
+    path: '/explore',
+    name: 'Explore',
+    component: ExploreView
   },
   {
     path: '/login',

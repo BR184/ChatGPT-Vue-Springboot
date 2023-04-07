@@ -9,6 +9,7 @@ import com.aliyun.oss.OSSException;
 import com.klbr184.entity.UserEntity;
 import com.klbr184.exception.SystemException;
 import com.klbr184.mapper.UserMapper;
+import com.klbr184.req.AiSettingReq;
 import com.klbr184.resp.CommonResp;
 import com.klbr184.service.UploadService;
 import com.klbr184.utils.SecurityUtil;
@@ -104,7 +105,7 @@ public class UploadServiceImpl implements UploadService {
                     .head(fileName)
                     .build();
             userMapper.updateById(user);
-            return new CommonResp(200, "上传头像成功", "https://kl-gpt.oss-cn-beijing.aliyuncs.com/"+objectName);
+            return new CommonResp(200, "上传头像成功", fileName);
         } catch (OSSException oe) {
             throw new SystemException(500, "上传头像失败,远程服务器错误");
         } catch (ClientException ce) {
@@ -119,4 +120,6 @@ public class UploadServiceImpl implements UploadService {
             }
         }
     }
+
+
 }

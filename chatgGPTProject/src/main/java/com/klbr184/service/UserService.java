@@ -1,5 +1,6 @@
 package com.klbr184.service;
 
+import com.klbr184.req.UpdateUserInfoReq;
 import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
 import com.klbr184.resp.CommonResp;
@@ -12,11 +13,13 @@ import java.util.Map;
  * @since 2023-03-17 00:36:15
  */
 public interface UserService {
-    void register(UserSaveReq req);
+    CommonResp register(UserSaveReq req);
 
     CommonResp<Map> login(UserAuthReq req);
 
     CommonResp logout();
 
     CommonResp getUser();
+
+    CommonResp updateUserInfo(UpdateUserInfoReq req);
 }

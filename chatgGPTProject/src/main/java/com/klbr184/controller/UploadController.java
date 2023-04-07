@@ -1,12 +1,11 @@
 package com.klbr184.controller;
 
+import com.klbr184.req.AiSettingReq;
 import com.klbr184.resp.CommonResp;
 import com.klbr184.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -22,8 +21,12 @@ public class UploadController {
     private UploadService uploadService;
 
     //上传头像
+    @PreAuthorize("hasAuthority('default')")
     @PostMapping("/avatar")
     public CommonResp uploadAvatar(@RequestParam("file") MultipartFile file) {
         return uploadService.uploadAvatar(file);
     }
+
+
+
 }

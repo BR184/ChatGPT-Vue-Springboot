@@ -10,4 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface UploadService {
     CommonResp uploadAvatar(MultipartFile file);
+
+
 }

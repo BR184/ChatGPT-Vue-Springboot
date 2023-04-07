@@ -1,6 +1,7 @@
 package com.klbr184.controller;
 
 import cn.hutool.core.date.DateUtil;
+import com.klbr184.req.UpdateUserInfoReq;
 import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
 import com.klbr184.resp.CommonResp;
@@ -31,9 +32,7 @@ public class UserController {
     public CommonResp register(@RequestBody UserSaveReq req){
         req.setPassword(passwordEncoder.encode(req.getPassword()));
         req.setRegTime(DateUtil.date());
-        CommonResp resp = new CommonResp<>();
-        userService.register(req);
-        return resp;
+        return userService.register(req);
     }
     @PostMapping("login")
     public CommonResp login(@RequestBody UserAuthReq req){
@@ -47,5 +46,12 @@ public class UserController {
     @PreAuthorize("hasAuthority('default')")
     public CommonResp test(){
         return new CommonResp<>(200,"Hi!",null);
+    }
+
+    @PutMapping()
+    @PreAuthorize("hasAuthority('default')")
+    public CommonResp update(@RequestBody UpdateUserInfoReq req){
+        System.out.println(req);
+        return userService.updateUserInfo(req);
     }
 }

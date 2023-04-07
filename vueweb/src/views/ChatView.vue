@@ -29,7 +29,7 @@
                             <div class="chat_box_container">
                                 {{ item.chatContent }}
                             </div>
-                            <img v-if="item.chatSide == 'user'" src="https://kl-gpt.oss-cn-beijing.aliyuncs.com/avatar/senko.png" class="user_head" />
+                            <img v-if="item.chatSide == 'user'" :src="head_url" class="user_head" />
                         </div>
                         <div style="height:50px"></div>
                     </el-scrollbar>
@@ -52,11 +52,24 @@
                             <span id="info">AI默认设定(1000字以内)</span>
                             <el-autocomplete v-model="chat_from.system" class="value_choose" popper-class="my-autocomplete"
                                 :fetch-suggestions="querySearch" placeholder="请输入内容" @select="handleSelect">
-                                <i class="el-icon-edit el-input__icon" slot="suffix" @click="handleIconClick">
+                                <!-- 增加设定 -->
+                                <i class="el-icon-plus el-input__icon add-sys" slot="suffix" @click="openAddNewSys">
                                 </i>
-                                <template slot-scope="{ item }">
-                                    <div class="name">{{ item.value }}</div>
-                                    <span class="intro">{{ item.intro }}</span>
+                                <template slot-scope="{item}">
+                                    <div class="sys-value-container">
+                                        <span class="intro">{{ item.intro }}</span>
+                                        <!-- 编辑设定 -->
+                                        <i class="el-icon-edit el-input__icon edit-sys" slot="suffix"
+                                            @click="openEditSys(item.id)">
+                                        </i>
+                                    </div>
+                                    <div class="sys-value-container">
+                                        <div class="name">{{ item.value }}</div>
+                                        <!-- 删除设定 -->
+                                        <i class="el-icon-delete el-input__icon delete-sys" slot="suffix"
+                                            @click="deleteSys(item.id)">
+                                        </i>
+                                    </div>
                                 </template>
                             </el-autocomplete>
                         </el-scrollbar>
@@ -74,11 +87,11 @@
                         </el-col>
                         <el-col style="height:90%">
                             <!-- 使用tempMsg接收el-input的消息 -->
-                            <el-input :disabled="inputDisabled" class="chat_input" style="height: 100%;width:90%" type="textarea" resize="none"
-                                placeholder="请输入内容" v-model="tempMsg" @keydown.ctrl.enter="sendMsg()">
+                            <el-input :disabled="inputDisabled" class="chat_input" style="height: 100%;width:90%"
+                                type="textarea" resize="none" placeholder="请输入内容" v-model="tempMsg"
+                                @keydown.enter="sendMsg()">
                             </el-input>
                         </el-col>
-
                     </el-col>
                     <el-col :span="1" style="height:100%;">
                         <el-button @click="sendMsg()">
@@ -88,6 +101,50 @@
                 </el-row>
             </el-col>
         </el-row>
+        <!-- 新增系统设定的Dialog -->
+        <el-dialog title="新增系统设定" :visible.sync="addSysDialogVisible" width="30%" append-to-body>
+            <el-form :model="new_sys_from" label-width="80px" :rules="add_sys_rule" ref="new_sys_from">
+                <el-form-item label="系统介绍" prop="intro">
+                    <el-input type="input" v-model="new_sys_from.intro" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="系统内容" prop="value">
+                    <el-input class="new-sys-textarea" resize='none' type="textarea" v-model="new_sys_from.value"
+                        autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="共享设定:">
+                    <el-radio-group v-model="new_sys_from.shared">
+                        <el-radio :label="0">私人</el-radio>
+                        <el-radio :label="1">分享</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="addSysDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addSys(new_sys_from)">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!-- 编辑系统设定的Dialog -->
+        <el-dialog title="编辑系统设定" :visible.sync="editSysDialogVisible" width="30%" append-to-body>
+            <el-form :model="edit_sys_from" label-width="80px" :rules="edit_sys_rule" ref="edit_sys_from">
+                <el-form-item label="系统介绍" prop="intro">
+                    <el-input type="input" v-model="edit_sys_from.intro" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="系统内容" prop="value">
+                    <el-input class="new-sys-textarea" resize='none' type="textarea" v-model="edit_sys_from.value"
+                        autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="共享设定:">
+                    <el-radio-group v-model="edit_sys_from.shared">
+                        <el-radio :label="0">私人</el-radio>
+                        <el-radio :label="1">分享</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="editSysDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="editSys(edit_sys_from)">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <style>
@@ -96,28 +153,64 @@
     border: 1px solid red;
     background-position: center;
 }*/
-html{
+html {
     overflow: hidden;
 }
-.delete-button{
-    position: relative;
-    top: 35%;
-    float: right;
-    opacity: 0;
+.name{
+    max-width: 92%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+}
+.add-sys {
+    margin-right: 5px;
+    cursor: pointer;
     transition: all 0.3s;
 }
 
-.delete-button:hover{
+.add-sys:hover {
     color: #e74645;
 }
 
-.chat-menu:hover .delete-button{
-    opacity: 1;
+.edit-sys {
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.chat-menu{
+.edit-sys:hover {
+    color: #e74645;
+}
+
+.delete-sys {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.delete-sys:hover {
+    color: #e74645;
+}
+
+.delete-button {
+    color: #606266!important;
+    position: relative;
+    top: 35%;
+    float: right;
+    opacity: 0!important;
+    transition: all 0.3s;
+}
+
+.delete-button:hover {
+    color: #e74645!important;
+}
+
+.chat-menu:hover .delete-button {
+    opacity: 1!important;
+}
+
+.chat-menu {
     user-select: none;
 }
+
 .chat_box_assistant {
     display: flex;
     flex-direction: row;
@@ -134,7 +227,7 @@ html{
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    align-items: center;
+    align-items: start;
     background-color: transparent;
     max-width: 88%;
     border-radius: 5px;
@@ -182,18 +275,22 @@ html{
 .el-input__inner:focus,
 .el-textarea__inner:focus {
     border: 1px #e74645 solid !important;
-    
+
 }
 
-el-input>.el-input__inner:focus,
-.el-textarea__inner:focus {
+.chat_input,
+.el-textarea>.el-input__inner:focus,
+.chat_input,
+.el-textarea>.el-textarea__inner:focus {
     border: 1px #e74645 solid !important;
     border-bottom: 0 !important;
     border-radius: 0 !important;
 }
 
-.el-textarea__inner,
-.el-textarea {
+.chat_input,
+.el-textarea>.el-textarea__inner,
+.chat_input,
+.el-textarea>.el-textarea {
     height: 100% !important;
     width: 100% !important;
     font-family: "Microsoft YaHei";
@@ -202,6 +299,25 @@ el-input>.el-input__inner:focus,
     border: 1px #e6e6e6 solid !important;
     border-bottom: 0 !important;
     border-radius: 0 !important;
+}
+
+.new-sys-textarea,
+.el-textarea>.el-input__inner:focus,
+.new-sys-textarea,
+.el-textarea>.el-textarea__inner:focus {
+    border: 1px #e74645 solid !important;
+}
+
+.new-sys-textarea,
+.el-textarea>.el-textarea__inner,
+.new-sys-textarea,
+.el-textarea>.el-textarea {
+    height: 400px !important;
+    width: 100% !important;
+    font-family: "Microsoft YaHei";
+    font-size: 16px !important;
+    font-weight: normal;
+    border: 1px #e6e6e6 solid !important;
 }
 
 .el-progress-bar__innerText {
@@ -300,6 +416,14 @@ el-input>.el-input__inner:focus,
     background-position: center;
 }
 
+.sys-value-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
 #info {
     text-overflow: clip;
     white-space: nowrap;
@@ -319,11 +443,38 @@ span {
 export default {
     data() {
         return {
+            //新增系统设定的Dialog校验规则
+            add_sys_rule: {
+                intro: [
+                    { required: true, message: '请输入简介', trigger: 'blur' },
+                    { min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur' }
+                ],
+                value: [
+                    { required: true, message: '请输入设定内容', trigger: 'blur' },
+                    { min: 2, max: 1000, message: '长度在 2 到 1000 个字符', trigger: 'blur' }
+                ],
+            },
+            //编辑系统设定的Dialog校验规则、
+            edit_sys_rule: {
+                intro: [
+                    { required: true, message: '请输入简介', trigger: 'blur' },
+                    { min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur' }
+                ],
+                value: [
+                    { required: true, message: '请输入设定内容', trigger: 'blur' },
+                    { min: 2, max: 1000, message: '长度在 2 到 1000 个字符', trigger: 'blur' }
+                ],
+            },
+            addSysDialogVisible: false,
+            editSysDialogVisible: false,
             inputDisabled: false,
+            temp_id: "0",
+            head_url: "",
             chatList: [],
             chatContent: [],
             chatInfo: [],
             saves: [],
+            sys: [],
             state: '',
             tempMsg: '',
             percentage: 0,
@@ -348,10 +499,163 @@ export default {
                 topP: 0.00,
                 presencePenalty: 0.00,
                 frequencyPenalty: 0.00,
-            }
+            },
+            new_sys_from: {
+                intro: '',
+                value: '',
+                shared: 0,
+            },
+            edit_sys_from: {
+                id: 0,
+                intro: '',
+                value: '',
+                shared: 0,
+            },
         }
     },
     methods: {
+        //打开新增设定对话框
+        openAddNewSys() {
+            this.new_sys_from.value = this.chat_from.system
+            this.addSysDialogVisible = true;
+        },
+        //打开编辑设定对话框
+        openEditSys(id) {
+            if(id==0){
+                this.$message({
+                    message: "系统默认设定不可编辑！",
+                    type: "error"
+                });
+                return
+            }
+            this.axios.get('/system/get?id=' + id)
+                .then(response => {
+                    let data = response.data;
+                    if(data.code == 200) {
+                        console.log(data)
+                        this.edit_sys_from.intro = data.data.intro
+                        this.edit_sys_from.value = data.data.value
+                        this.edit_sys_from.shared = data.data.shared
+                        this.temp_id = id.toString()
+                        this.editSysDialogVisible = true;
+                    } else {
+                        this.$message({
+                            message: "获取设定失败！",
+                            type: "error"
+                        });
+                    } 
+                })
+                .catch(error => {
+                    console.log(error);
+                });  
+        },
+        //新增设定
+        addSys(form) {
+            this.$refs.new_sys_from.validate(valid => {
+                if (valid) {
+                    //axios使用post方法发送设定
+                    this.axios.post('/system', form)
+                        .then(response => {
+                            let data = response.data;
+                            //判断是否保存成功
+                            if (data.code == 200) {
+                                this.$message({
+                                    message: "添加成功！",
+                                    type: "success"
+                                });
+                                this.addSysDialogVisible = false;
+                                //刷新设定列表
+                                this.getSys()
+                            } else {
+                                this.addSysDialogVisible = false;
+                                this.$message({
+                                    message: "添加失败！",
+                                    type: "error"
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                } else {
+                    this.$message({
+                        message: "请检查输入内容！",
+                        type: "error"
+                    });
+                }
+            });
+        },
+        //编辑设定
+        editSys(form) {
+            form.id=this.temp_id
+            this.$refs.edit_sys_from.validate(valid => {
+                if (valid) {
+                    //axios使用put方法发送设定
+                    this.axios.put('/system', form)
+                        .then(response => {
+                            let data = response.data;
+                            //判断是否保存成功
+                            if (data.code == 200) {
+                                this.$message({
+                                    message: "编辑成功！",
+                                    type: "success"
+                                });
+                                this.temp_id = "0"
+                                this.editSysDialogVisible = false;
+                            } else {
+                                this.temp_id = "0"
+                                this.editSysDialogVisible = false;
+                                this.$message({
+                                    message: "编辑失败！",
+                                    type: "error"
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                } else {
+                    this.$message({
+                        message: "请检查输入内容！",
+                        type: "error"
+                    });
+                }
+            });
+        },
+        //删除设定
+        deleteSys(id) {
+            this.$confirm('此操作将永久删除该设定, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                //axios使用delete方法删除设定
+                this.axios.delete('/system?id=' + id)
+                    .then(response => {
+                        let data = response.data;
+                        //判断是否删除成功
+                        if (data.code == 200) {
+                            this.$message({
+                                message: "删除成功！",
+                                type: "success"
+                            });
+                        } else {
+                            this.$message({
+                                message: "删除失败！",
+                                type: "error"
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
+        },
         //新增聊天
         addNewChat() {
             //输入聊天标题
@@ -396,29 +700,29 @@ export default {
                 type: 'warning'
             }).then(() => {
                 //axios使用delete方法删除对话
-            this.axios.delete('/chat?id=' + chatID)
-                .then(response => {
-                    let data = response.data;
-                    //判断是否删除成功
-                    if (data.code == 200) {
+                this.axios.delete('/chat?id=' + chatID)
+                    .then(response => {
+                        let data = response.data;
+                        //判断是否删除成功
+                        if (data.code == 200) {
+                            this.$message({
+                                message: "删除成功！",
+                                type: "success"
+                            });
+                            //刷新聊天列表
+                            this.created();
+                        } else {
+                            this.$message({
+                                message: "删除失败！",
+                                type: "error"
+                            });
+                        }
+                    },).catch(() => {
                         this.$message({
-                            message: "删除成功！",
-                            type: "success"
+                            type: 'error',
+                            message: '删除失败！请检查网络连接！'
                         });
-                        //刷新聊天列表
-                        this.created();
-                    } else {
-                        this.$message({
-                            message: "删除失败！",
-                            type: "error"
-                        });
-                    }
-                },).catch(() => {
-                    this.$message({
-                        type: 'error',
-                        message: '删除失败！请检查网络连接！'
                     });
-                });
             }).catch(() => {
                 this.$message({
                     type: 'info',
@@ -440,7 +744,7 @@ export default {
                     this.chat_from.presencePenalty = this.chatInfo.presence_penalty;
                     this.chat_from.frequencyPenalty = this.chatInfo.frequency_penalty;
                     this.chat_from.system = this.chatInfo.system;
-                    this.percentage = parseFloat((this.chatInfo.usageTotalTokens / 4096 * 100 * 2).toFixed(2))>100?100:parseFloat((this.chatInfo.usageTotalTokens / 4096 * 100 * 2).toFixed(2));
+                    this.percentage = parseFloat((this.chatInfo.usageTotalTokens / 4096 * 100 * 2).toFixed(2)) > 100 ? 100 : parseFloat((this.chatInfo.usageTotalTokens / 4096 * 100 * 2).toFixed(2));
                 })
                 .catch(error => {
                     console.log(error);
@@ -457,6 +761,7 @@ export default {
         },
         //加载页面时初始化数据
         created() {
+            this.head_url=this.$getHead()+this.$getUser().head;
             //axios使用get方法获取保存的对话
             this.axios.get('/chat/list')
                 .then(response => {
@@ -507,7 +812,7 @@ export default {
                                 this.$refs.scrollbar.wrap.scrollTop = this.$refs.scrollbar.wrap.scrollHeight;
                             });
                         }, 200);
-                    }else{
+                    } else {
                         this.inputDisabled = false;
                         this.$message({
                             message: "消息发送失败!错误代码：" + data.code,
@@ -518,9 +823,9 @@ export default {
                 .catch(error => {
                     this.inputDisabled = false;
                     this.$message({
-                            message: "消息发送失败!错误代码：" + error.code,
-                            type: "error"
-                        });
+                        message: "消息发送失败!错误代码：" + error.code,
+                        type: "error"
+                    });
                 });
         },
         //提示框
@@ -540,33 +845,38 @@ export default {
             console.log(key, keyPath);
         },
         querySearch(queryString, cb) {
-            var saves = this.saves;
-            var results = queryString ? saves.filter(this.createFilter(queryString)) : saves;
-            // 调用 callback 返回建议列表的数据
-            cb(results);
+            this.axios.get('/system')
+                .then(response => {
+                    let data = response.data;
+                    //判断是否获取成功
+                    if (data.code == 200) {
+                        var saves = data.data;
+                        saves.unshift({ "intro": "默认设定", "value": "You are a AI helper","id":0})
+                        var results = queryString ? saves.filter(this.createFilter(queryString)) : saves;
+                        // 调用 callback 返回建议列表的数据
+                        cb(results);
+                    } else {
+                        this.$message({
+                            message: "获取设定失败！",
+                            type: "error"
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         },
         createFilter(queryString) {
             return (saves) => {
                 return (saves.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
             };
         },
-        loadAll() {
-            return [
-                { "value": "You are an AI helper", "intro": "默认设定1" },
-                { "value": "You are an AI helper", "intro": "默认设定2" },
-                { "value": "You are an AI helper", "intro": "默认设定3" },
-                { "value": "You are an AI helper", "intro": "默认设定4" },
-            ]
-        },
         handleSelect(item) {
-            console.log(item);
         },
         handleIconClick(ev) {
-            console.log(ev);
         }
     },
     mounted() {
-        this.saves = this.loadAll();
         this.created();
     },
 }
