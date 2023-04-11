@@ -1,16 +1,19 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/HomeView.vue'
-import Login from '../views/Login.vue'
-import Register from '../views/Register.vue'
+import Home from '../views/user/HomeView.vue'
+import Login from '../views/user/Login.vue'
+import Register from '../views/user/Register.vue'
 import Index from '../views/IndexView.vue'
-import Logout from '../views/Logout.vue'
+import Logout from '../views/user/Logout.vue'
 import Chat from '../views/ChatView.vue'
-import UserInfo from '../views/UserInfo.vue'
-import FavSys from '../views/FavSys.vue'
-import FavChat from '../views/FavChat.vue'
+import UserInfo from '../views/user/UserInfo.vue'
+import FavSys from '../views/user/FavSys.vue'
+import FavChat from '../views/user/FavChat.vue'
 import ShareView from '../views/ShareView.vue'
 import ExploreView from '../views/ExploreView.vue'
+import AdminView from '../views/admin/AdminView.vue'
+import AdminIndexView from '../views/admin/AdminIndexView.vue'
+import PermissionView from '../views/admin/PermissionView.vue'
 
 Vue.use(VueRouter)
 
@@ -69,6 +72,16 @@ const routes = [
     path:'/chat',
     name:'Chat',
     component: Chat
+  },
+  {
+    path:'/admin',
+    name:'Admin',
+    component: AdminView,
+    children:[
+      {path:'',redirect:'index'},
+      {path:'index',component:AdminIndexView},
+      {path:'permission',component:PermissionView}
+    ]
   }
 ]
 

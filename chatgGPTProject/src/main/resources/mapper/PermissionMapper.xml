@@ -15,5 +15,12 @@
           AND r.state = 0
           AND p.state = 0
     </select>
-
+    <select id="selectPermissionsRoleId" resultType="com.klbr184.entity.Permission">
+        SELECT
+            p.id,p.permission_name,p.permission_key,p.state
+        FROM
+            role_permission rp LEFT JOIN permission p ON rp.permission_id = p.id
+        WHERE
+            rp.role_id=#{roleId}
+    </select>
 </mapper>

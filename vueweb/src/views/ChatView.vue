@@ -2,8 +2,8 @@
     <div class="chat_container">
         <el-row :gutter="0" class="chat_row">
             <el-col :span="4" class="left_menu">
-                <el-menu style="height: 100%;" default-active="0" class="el-menu-vertical-demo" @open="handleOpen"
-                    @close="handleClose" background-color="transparent" text-color="#909399" active-text-color="#e74645">
+                <el-menu style="height: 100%;" default-active="0" class="el-menu-vertical-demo" 
+                background-color="transparent" text-color="#909399" active-text-color="#e74645">
                     <!-- v-for遍历 el-menu-item -->
                     <el-menu-item v-for="(item, i) in chatList" :key="item.chatID" :index="i.toString()"
                         @click="getChatInfoAndContent(item.chatID)" class="chat-menu">
@@ -279,18 +279,18 @@ html {
 }
 
 .chat_input,
-.el-textarea>.el-input__inner:focus,
+.el-textarea .el-input__inner:focus,
 .chat_input,
-.el-textarea>.el-textarea__inner:focus {
+.el-textarea .el-textarea__inner:focus {
     border: 1px #e74645 solid !important;
     border-bottom: 0 !important;
     border-radius: 0 !important;
 }
 
 .chat_input,
-.el-textarea>.el-textarea__inner,
+.el-textarea .el-textarea__inner,
 .chat_input,
-.el-textarea>.el-textarea {
+.el-textarea .el-textarea {
     height: 100% !important;
     width: 100% !important;
     font-family: "Microsoft YaHei";
@@ -302,16 +302,16 @@ html {
 }
 
 .new-sys-textarea,
-.el-textarea>.el-input__inner:focus,
+.el-textarea .el-input__inner:focus,
 .new-sys-textarea,
-.el-textarea>.el-textarea__inner:focus {
+.el-textarea .el-textarea__inner:focus {
     border: 1px #e74645 solid !important;
 }
 
 .new-sys-textarea,
-.el-textarea>.el-textarea__inner,
+.el-textarea .el-textarea__inner,
 .new-sys-textarea,
-.el-textarea>.el-textarea {
+.el-textarea .el-textarea {
     height: 400px !important;
     width: 100% !important;
     font-family: "Microsoft YaHei";
@@ -352,13 +352,18 @@ html {
     justify-content: center;
 }
 
-.el-scrollbar__wrap {
+.chats_container .el-scrollbar__wrap {
+    width: 105%;
+    overflow-x: hidden !important;
+    overflow-y: scroll !important;
+}
+.value_inner .el-scrollbar__wrap {
     width: 105%;
     overflow-x: hidden !important;
     overflow-y: scroll !important;
 }
 
-.el-scrollbar__view {
+.value_inner .el-scrollbar__view {
     padding-left: 8%;
     width: 90%;
     height: 100%;
@@ -837,12 +842,6 @@ export default {
                 message: h('i', { style: 'color: teal' }, 'Token是OpenAI官方限制的对话上下文内容上限，当你聊天内容占满所有的Token时，我们会自动清理之前的对话，此时GPT会遗忘之前的内容！'),
                 duration: 8000
             });
-        },
-        handleOpen(key, keyPath) {
-            console.log(key, keyPath);
-        },
-        handleClose(key, keyPath) {
-            console.log(key, keyPath);
         },
         querySearch(queryString, cb) {
             this.axios.get('/system')

@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +22,7 @@ import java.util.Objects;
  * @since 2023-03-17 20:24:54
  */
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired

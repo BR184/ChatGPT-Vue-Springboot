@@ -18,6 +18,8 @@ import com.klbr184.vo.AiSettingsListVo;
 import com.klbr184.vo.AiSettingsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.Objects;
  * @since 2023-04-07 16:49:59
  */
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class AiSettingServiceImpl implements AiSettingService {
     @Autowired
     private AiSettingMapper aiSettingMapper;

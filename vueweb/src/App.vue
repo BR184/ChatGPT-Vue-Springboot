@@ -26,7 +26,7 @@
         <!-- 右侧 -->
         <el-col :span="9">
           <!-- 头像和菜单 -->
-          <div v-if="this.$getToken()" class="head">
+          <div v-if="this.show_info()" class="head">
             <el-dropdown trigger="hover">
               <el-avatar :src="this.$getHead()+this.$getUser().head" @click.native="home"></el-avatar>
               <el-dropdown-menu slot="dropdown">
@@ -35,6 +35,7 @@
               </el-dropdown-menu>
             </el-dropdown>
             <p style="margin-left:15px">{{this.$getUser().username}}</p>
+            <el-button style="margin-left:15px" type="danger" size="small" v-if="adm_show" @click="admin">管理</el-button>
           </div>
           <el-button type="danger" size="small" v-else @click="login">登录</el-button>
         </el-col>
@@ -52,7 +53,8 @@ export default {
   data: () => ({
     activeIndex: "/index",
     token: null,
-    nav_show: true
+    nav_show: true,
+    adm_show: false,
   }),
   methods: {
     home() {
@@ -80,7 +82,25 @@ export default {
         }
       })
     },
-  }
+    admin() {
+      this.$router.push({ path: '/admin' })
+    },
+    show_info(){
+      if(this.$getToken()!=null){
+        //检查是否有基础权限
+        this.axios.get('/admin/is_admin').then((resp) => {
+          const data = resp.data
+          if (data.code == 200) {
+            this.adm_show = true;
+          }else{
+            this.adm_show = false;
+          }
+        })
+        return true;
+      }
+      return false;
+    }
+  },
 }
 
 </script>

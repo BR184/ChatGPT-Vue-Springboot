@@ -157,8 +157,8 @@ public class ChatServiceImpl implements ChatService {
                     .proxy(proxy)//自定义代理
                     .addInterceptor(new OpenAiResponseInterceptor())//自定义返回值拦截
                     .connectTimeout(10, TimeUnit.SECONDS)//自定义超时时间
-                    .writeTimeout(30, TimeUnit.SECONDS)//自定义超时时间
-                    .readTimeout(30, TimeUnit.SECONDS)//自定义超时时间
+                    .writeTimeout(60, TimeUnit.SECONDS)//自定义超时时间
+                    .readTimeout(60, TimeUnit.SECONDS)//自定义超时时间
                     .build();
             //构建客户端
             OpenAiClient openAiClient = OpenAiClient.builder()
@@ -204,7 +204,6 @@ public class ChatServiceImpl implements ChatService {
             //消息处理完毕,更新message
             message = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
         } catch (Exception e) {
-            System.out.println("error detected");
             throw new RuntimeException(e);
         }
         //返回gpt发的消息

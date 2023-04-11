@@ -1,6 +1,8 @@
 package com.klbr184.entity;
 
 import java.io.Serializable;
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +23,10 @@ public class Role implements Serializable{
     private String roleName;
     //角色名字(代码调用)
     private String roleKey;
+    //创建时间
+    private Date createTime;
+    //更新时间
+    private Date updateTime;
     //启用:0,禁用:1
     private String state;
 }

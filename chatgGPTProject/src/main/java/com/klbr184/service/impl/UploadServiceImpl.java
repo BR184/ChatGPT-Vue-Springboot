@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
@@ -32,6 +34,7 @@ import java.util.Objects;
  */
 @Service
 @ConfigurationProperties(prefix = "oss")
+@Transactional(propagation = Propagation.REQUIRED)
 public class UploadServiceImpl implements UploadService {
     @Autowired
     private UserMapper userMapper;

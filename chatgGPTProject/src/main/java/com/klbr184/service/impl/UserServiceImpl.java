@@ -24,6 +24,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -39,6 +41,7 @@ import java.util.Objects;
  * @since 2023-03-17 00:36:05
  */
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements UserService {
     @Resource
     private UserMapper userMapper;
