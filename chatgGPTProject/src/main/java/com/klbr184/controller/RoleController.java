@@ -17,16 +17,28 @@ import org.springframework.web.bind.annotation.*;
 public class RoleController {
     @Autowired
     private RoleService roleService;
+    //添加角色
+    @PreAuthorize("hasAuthority('manage_role')")
+    @PostMapping()
+    public CommonResp addRole(@RequestBody RoleUpdateReq roleUpdateReq) {
+        return roleService.addRole(roleUpdateReq);
+    }
+    //删除角色
+    @PreAuthorize("hasAuthority('manage_role')")
+    @DeleteMapping()
+    public CommonResp deleteRole(@RequestParam Integer roleId) {
+        return roleService.deleteRole(roleId);
+    }
+    //更新角色
+    @PreAuthorize("hasAuthority('manage_role')")
+    @PutMapping()
+    public CommonResp updateRole(@RequestBody RoleUpdateReq roleUpdateReq) {
+        return roleService.updateRole(roleUpdateReq);
+    }
     //查询角色
     @PreAuthorize("hasAuthority('manage_role')")
     @GetMapping()
     public CommonResp getRole(@RequestParam Integer page) {
         return roleService.getRole(page);
-    }
-
-    @PreAuthorize("hasAuthority('manage_role')")
-    @PutMapping()
-    public CommonResp updateRole(@RequestBody RoleUpdateReq roleUpdateReq) {
-        return roleService.updateRole(roleUpdateReq);
     }
 }

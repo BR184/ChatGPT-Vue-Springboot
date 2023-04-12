@@ -12,4 +12,8 @@ public interface RoleService {
     CommonResp getRole(Integer page);
 
     CommonResp updateRole(RoleUpdateReq roleUpdateReq);
+
+    CommonResp addRole(RoleUpdateReq roleUpdateReq);
+
+    CommonResp deleteRole(Integer roleId);
 }

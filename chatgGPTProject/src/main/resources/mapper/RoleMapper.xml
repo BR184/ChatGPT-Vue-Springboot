@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.klbr184.mapper.RoleMapper">
+    <insert id="id" keyProperty="role" useGeneratedKeys="true" parameterType="com.klbr184.entity.Role">
+        INSERT INTO role (role_name,role_key,create_time,state) VALUES (#{roleName},#{roleKey},#{createTime},#{state})
+    </insert>
+</mapper>
