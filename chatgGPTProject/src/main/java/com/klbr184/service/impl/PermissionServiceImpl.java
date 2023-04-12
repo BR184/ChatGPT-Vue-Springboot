@@ -27,7 +27,7 @@ public class PermissionServiceImpl implements PermissionService {
         if (roleId == null ) {
             return new CommonResp<>(400, "参数错误", null);
         }
-        List<Permission> perList = permissionMapper.selectPermissionsRoleId(roleId);
+        List<Permission> perList = permissionMapper.selectPermissionsByRoleId(roleId);
         if (perList == null || perList.size() == 0) {
             return new CommonResp<>(200, "操作成功", null);
         }

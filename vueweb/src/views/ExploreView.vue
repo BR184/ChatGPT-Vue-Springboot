@@ -167,6 +167,12 @@ export default {
 .shared-container{
     user-select: none;
 }
+.shared-container .el-scrollbar__view{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+}
 .title-explore{
     font-size: 60px;
     font-weight: 800;

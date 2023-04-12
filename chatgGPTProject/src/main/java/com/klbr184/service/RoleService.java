@@ -1,5 +1,6 @@
 package com.klbr184.service;
 
+import com.klbr184.req.RoleUpdateReq;
 import com.klbr184.resp.CommonResp;
 
 /**
@@ -9,4 +10,6 @@ import com.klbr184.resp.CommonResp;
  */
 public interface RoleService {
     CommonResp getRole(Integer page);
+
+    CommonResp updateRole(RoleUpdateReq roleUpdateReq);
 }

@@ -1,5 +1,6 @@
 package com.klbr184.controller;
 
+import com.klbr184.req.RoleUpdateReq;
 import com.klbr184.resp.CommonResp;
 import com.klbr184.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +22,11 @@ public class RoleController {
     @GetMapping()
     public CommonResp getRole(@RequestParam Integer page) {
         return roleService.getRole(page);
+    }
+
+    @PreAuthorize("hasAuthority('manage_role')")
+    @PutMapping()
+    public CommonResp updateRole(@RequestBody RoleUpdateReq roleUpdateReq) {
+        return roleService.updateRole(roleUpdateReq);
     }
 }

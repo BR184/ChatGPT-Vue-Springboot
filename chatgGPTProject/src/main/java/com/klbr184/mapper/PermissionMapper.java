@@ -15,5 +15,5 @@ import java.util.List;
 public interface PermissionMapper extends BaseMapper<Permission> {
     List<String> selectPermissionsByUserID(long userID);
 
-    List<Permission> selectPermissionsRoleId(Integer roleId);
+    List<Permission> selectPermissionsByRoleId(Integer roleId);
 }
