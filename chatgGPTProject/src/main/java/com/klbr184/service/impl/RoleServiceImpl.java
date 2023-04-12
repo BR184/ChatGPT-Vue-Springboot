@@ -88,6 +88,19 @@ public class RoleServiceImpl implements RoleService {
                 throw new SystemException(400,role.getRoleName()+"默认用户的状态不能修改");
             }
         }
+        //获取全部角色以做重复判断
+        List<Role> roles = roleMapper.selectList(null);
+        //遍历角色
+        for (Role role1 : roles) {
+            //如果角色名重复
+            if (role1.getRoleName().equals(role.getRoleName()) && !role1.getId().equals(role.getId())) {
+                throw new SystemException(400, "角色名重复!");
+            }
+            //如果角色key重复
+            if (role1.getRoleKey().equals(role.getRoleKey()) && !role1.getId().equals(role.getId())) {
+                throw new SystemException(400, "角色key重复!");
+            }
+        }
         //遍历权限id
         Integer roleId = roleUpdateReq.getId();
         //获取当前角色已经拥有的权限
@@ -120,7 +133,6 @@ public class RoleServiceImpl implements RoleService {
         }
         //处理需要新增的权限
         if (addPermissionIds.size() > 0) {
-            System.out.println(addPermissionIds);
             for (Integer addPermissionId : addPermissionIds) {
                 RolePermission rolePermission = new RolePermission();
                 rolePermission.setRoleId(roleId).setPermissionId(addPermissionId);
@@ -129,7 +141,6 @@ public class RoleServiceImpl implements RoleService {
         }
         //处理需要删除的权限
         if (deletePermissionIds.size() > 0) {
-            System.out.println(deletePermissionIds);
             for (Integer deletePermissionId : deletePermissionIds) {
                 Permission permission = PermissionMapper.selectById(deletePermissionId);
 
