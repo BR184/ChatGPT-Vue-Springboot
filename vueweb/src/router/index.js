@@ -13,7 +13,8 @@ import ShareView from '../views/ShareView.vue'
 import ExploreView from '../views/ExploreView.vue'
 import AdminView from '../views/admin/AdminView.vue'
 import AdminIndexView from '../views/admin/AdminIndexView.vue'
-import PermissionView from '../views/admin/PermissionView.vue'
+import RoleView from '../views/admin/RoleView.vue'
+import UserView from '../views/admin/UserView.vue'
 
 Vue.use(VueRouter)
 
@@ -80,7 +81,8 @@ const routes = [
     children:[
       {path:'',redirect:'index'},
       {path:'index',component:AdminIndexView},
-      {path:'permission',component:PermissionView}
+      {path:'role',component:RoleView},
+      {path:'user',component:UserView}
     ]
   }
 ]

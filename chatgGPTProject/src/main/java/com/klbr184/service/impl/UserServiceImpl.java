@@ -1,27 +1,36 @@
 package com.klbr184.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.klbr184.entity.LoginUser;
 import com.klbr184.entity.UserEntity;
 import com.klbr184.entity.UserRole;
+import com.klbr184.exception.SystemException;
 import com.klbr184.mapper.UserMapper;
 import com.klbr184.mapper.UserRoleMapper;
 import com.klbr184.req.UpdateUserInfoReq;
 import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
+import com.klbr184.req.adminUpdateUserInfoReq;
 import com.klbr184.resp.CommonResp;
 import com.klbr184.service.UserService;
 import com.klbr184.utils.JwtUtil;
 import com.klbr184.utils.RedisCache;
 import com.klbr184.utils.SecurityUtil;
+import com.klbr184.vo.UserPageVo;
+import com.klbr184.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -30,10 +39,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author KL
@@ -53,11 +59,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRoleMapper userRoleMapper;
+    @Value("${oss.bucketName}")
+    private String bucketName;
+    @Value("${oss.endpoint}")
+    private String endpoint;
+
     @Override
     public CommonResp register(UserSaveReq req) {
         UserEntity userEntity = BeanUtil.copyProperties(req, UserEntity.class);
         if (ObjectUtils.isEmpty(selectByUsername(userEntity.getUsername()))) {
-            Long userId =IdUtil.getSnowflakeNextId();
+            Long userId = IdUtil.getSnowflakeNextId();
             userEntity.setId(userId);
             userEntity.setHead("default.png");
             userMapper.insert(userEntity);
@@ -83,6 +94,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         LoginUser user = (LoginUser) authenticate.getPrincipal();
         String userID = user.getUser().getId().toString();
         String jwt = JwtUtil.createJWT(userID);
+        UserEntity userEntity = user.getUser();
+        userEntity.setId(Long.valueOf(userID));
+        userEntity.setLastLogin(DateUtil.date());
+        userMapper.updateById(userEntity);
         Map<String, String> map = new HashMap<>();
         map.put("token", jwt);
         redisCache.setCacheObject("login:" + userID, user);
@@ -114,7 +129,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         //如果是更改用户名
         if (req.getUsername() != null && !req.getUsername().equals("")) {
             //判断密码是否正确
-            if (passwordEncoder.matches(req.getPassword(),SecurityUtil.getPassword())) {
+            if (passwordEncoder.matches(req.getPassword(), SecurityUtil.getPassword())) {
                 //判断用户名是否与原来的一样
                 if (req.getUsername().equals(user.getUsername())) {
                     return new CommonResp(400, "用户名与原用户名一致！", null);
@@ -138,9 +153,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         //如果是更改密码
         else if (req.getNewPassword() != null && !req.getNewPassword().equals("")) {
             //判断密码是否正确
-            if (passwordEncoder.matches(req.getPassword(),SecurityUtil.getPassword())) {
+            if (passwordEncoder.matches(req.getPassword(), SecurityUtil.getPassword())) {
                 //判断新密码是否与原密码一样
-                if (passwordEncoder.matches(req.getNewPassword(),SecurityUtil.getPassword())) {
+                if (passwordEncoder.matches(req.getNewPassword(), SecurityUtil.getPassword())) {
                     return new CommonResp(400, "新密码与原密码一致！", null);
                 } else {
                     UserEntity newUser = UserEntity.builder()
@@ -160,7 +175,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         //如果是更改邮箱
         else if (req.getEmail() != null && !req.getEmail().equals("")) {
             //判断密码是否正确
-            if (passwordEncoder.matches(req.getPassword(),SecurityUtil.getPassword())) {
+            if (passwordEncoder.matches(req.getPassword(), SecurityUtil.getPassword())) {
                 //判断邮箱是否与原来的一样
                 if (req.getEmail().equals(user.getEmail())) {
                     return new CommonResp(400, "邮箱与原邮箱一致！", null);
@@ -179,6 +194,68 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         return new CommonResp(400, "修改失败", null);
     }
 
+    @Override
+    public CommonResp getAllUser(Integer page) {
+        if (page == null || page < 1) {
+            throw new SystemException(400, "页码错误");
+        }
+        IPage<UserEntity> userPage = new Page<>(page, 10);
+        userMapper.selectPage(userPage, null);
+        List<UserEntity> userEntityList = userPage.getRecords();
+        List<UserVo> userVoList = new ArrayList<>();
+        for (UserEntity userEntity : userEntityList) {
+            UserVo userVo = new UserVo();
+            BeanUtil.copyProperties(userEntity, userVo, "password");
+            userVo.setHead(formatAvatar(userEntity.getHead()));
+            userVoList.add(userVo);
+        }
+        UserPageVo userPageVo = new UserPageVo(page, (int)userPage.getPages(), userVoList);
+        return new CommonResp(200, "操作成功", userPageVo);
+    }
+
+    @Override
+    public CommonResp adminUpdateUserInfo(adminUpdateUserInfoReq req) {
+        UserEntity user = userMapper.selectById(req.getId());
+        if (user == null) {
+            throw new SystemException(400, "用户不存在");
+        }
+        UserEntity newUser = new UserEntity();
+        BeanUtil.copyProperties(req, newUser,"username");
+        userMapper.updateById(newUser);
+        return new CommonResp(200, "操作成功", null);
+    }
+
+    @Override
+    public CommonResp resetUsername(Long id) {
+        UserEntity user = userMapper.selectById(id);
+        if (user == null) {
+            throw new SystemException(400, "用户不存在");
+        }
+        UserEntity newUser = new UserEntity();
+        newUser.setId(id);
+        newUser.setUsername("用户" + id);
+        userMapper.updateById(newUser);
+        //移除redis中的用户信息
+        redisCache.deleteObject("login:" + id);
+        return new CommonResp<String>(200, "操作成功", "用户" + id);
+    }
+
+    @Override
+    public CommonResp resetAvatar(Long id) {
+        UserEntity user = userMapper.selectById(id);
+        if (user == null) {
+            throw new SystemException(400, "用户不存在");
+        }
+        UserEntity newUser = new UserEntity();
+        newUser.setId(id);
+        newUser.setHead("default.png");
+        userMapper.updateById(newUser);
+        //移除redis中的用户信息
+        redisCache.deleteObject("login:" + id);
+        return new CommonResp<String>(200, "操作成功", formatAvatar("default.png"));
+    }
+
+    //根据用户名查询用户
     public UserEntity selectByUsername(String username) {
         QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(UserEntity::getUsername, username);
@@ -187,6 +264,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             return null;
         } else {
             return userEntityList.get(0);
+        }
+    }
+
+    //格式化头像链接
+    public String formatAvatar(String avatar) {
+        if (avatar == null || avatar.equals("")) {
+            return null;
+        }
+        if (avatar.startsWith("http://") || avatar.startsWith("https://")) {
+            return avatar;
+        } else {
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append("https://")
+                    .append(bucketName)
+                    .append(".")
+                    .append(endpoint.replace("https://", ""))
+                    .append("/avatar/")
+                    .append(avatar);
+            return stringBuffer.toString();
+        }
+    }
+    //反格式化头像链接
+    public String unformatAvatar(String avatar){
+        if (avatar == null || avatar.equals("")) {
+            return null;
+        }
+        if (avatar.startsWith("http://") || avatar.startsWith("https://")) {
+            String s = avatar.split("/avatar/")[1];
+            return s;
+        } else {
+            return avatar;
         }
     }
 }

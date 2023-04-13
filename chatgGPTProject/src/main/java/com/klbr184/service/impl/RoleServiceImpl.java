@@ -47,8 +47,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public CommonResp getRole(Integer page) {
-        if (page == null) {
-            return new CommonResp<>(400, "参数错误", null);
+        if (page == null || page < 1) {
+            throw new SystemException(400, "页码错误");
         }
         IPage<Role> iPage = new Page<>(page, 10);
         roleMapper.selectPage(iPage, null);

@@ -3,6 +3,7 @@ package com.klbr184.service;
 import com.klbr184.req.UpdateUserInfoReq;
 import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
+import com.klbr184.req.adminUpdateUserInfoReq;
 import com.klbr184.resp.CommonResp;
 
 import java.util.Map;
@@ -22,4 +23,12 @@ public interface UserService {
     CommonResp getUser();
 
     CommonResp updateUserInfo(UpdateUserInfoReq req);
+
+    CommonResp getAllUser(Integer page);
+
+    CommonResp adminUpdateUserInfo(adminUpdateUserInfoReq req);
+
+    CommonResp resetUsername(Long id);
+
+    CommonResp resetAvatar(Long id);
 }

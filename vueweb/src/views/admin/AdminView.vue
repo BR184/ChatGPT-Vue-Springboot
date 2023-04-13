@@ -5,14 +5,18 @@
                 <el-menu default-active="index" class="menu-left"
                     background-color="#e74645" text-color="#fff" active-text-color="#facd60" :router="true">
                     <h1 class="menu-left-title">管理系统</h1>
-                    <hr>
+                    <div class="admin-title-line"></div>
                     <el-menu-item index="index">
                         <i class="el-icon-s-home"></i>
                         <span slot="title">首页</span>
                     </el-menu-item>
-                    <el-menu-item index="permission">
+                    <el-menu-item index="role">
                         <i class="el-icon-document-copy"></i>
-                        <span slot="title">权限管理</span>
+                        <span slot="title">角色管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="user">
+                        <i class="el-icon-user"></i>
+                        <span slot="title">用户管理</span>
                     </el-menu-item>
                     <el-submenu index="2">
                         <template slot="title">
@@ -42,6 +46,11 @@ export default {
 <style>
 hr{
     margin: 0;
+}
+.admin-title-line{
+    width: 100% !important;
+    height: 2px;
+    background-color: #fff;
 }
 .admin-page {
     position: fixed;

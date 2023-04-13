@@ -28,8 +28,9 @@ public class UserEntity {
     private String email;
     private String head;
     private Long coin;
-    private Long chatForm;
     private Date lastLogin;
     private Date regTime;
+    private String banMsg;
+    private Byte state;
     private Byte deleted;
 }
