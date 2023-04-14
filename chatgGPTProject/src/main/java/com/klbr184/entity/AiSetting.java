@@ -5,6 +5,8 @@ import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,9 +26,11 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 public class AiSetting implements Serializable{
     //系统设定ID
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     //保存者用户ID
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
     //系统设定简介
     private String intro;

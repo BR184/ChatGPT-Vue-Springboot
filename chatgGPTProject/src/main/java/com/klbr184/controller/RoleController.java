@@ -41,4 +41,10 @@ public class RoleController {
     public CommonResp getRole(@RequestParam Integer page) {
         return roleService.getRole(page);
     }
+    //根据用户ID查询角色
+    @PreAuthorize("hasAuthority('manage_role')")
+    @GetMapping("user")
+    public CommonResp getRoleByUserID(@RequestParam Long userID) {
+        return roleService.getRoleByUserID(userID);
+    }
 }

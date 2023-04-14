@@ -56,6 +56,25 @@ public class AiSettingController {
         return aiSettingService.getSystemList(page);
     }
 
+    //分页查询所有系统设定
+    @PreAuthorize("hasAuthority('manage_ai_setting')")
+    @GetMapping("manage")
+    public CommonResp getAllSystemList(@RequestParam Integer page) {
+        return aiSettingService.getAllSystemListByPage(page);
+    }
+
+    //管理更新系统设定
+    @PreAuthorize("hasAuthority('manage_ai_setting')")
+    @PutMapping("manage")
+    public CommonResp manageUpdateSystem(@RequestBody AiSettingReq req) {
+        return aiSettingService.adminUpdateSystem(req);
+    }
+    //管理删除系统设定
+    @PreAuthorize("hasAuthority('manage_ai_setting')")
+    @DeleteMapping("manage")
+    public CommonResp manageDeleteSystem(@RequestParam Long id) {
+        return aiSettingService.adminDeleteSystem(id);
+    }
     //保存他人系统设定
     @PreAuthorize("hasAuthority('default')")
     @GetMapping("save")

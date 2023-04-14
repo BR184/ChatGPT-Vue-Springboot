@@ -14,7 +14,7 @@ import com.klbr184.req.AiSettingReq;
 import com.klbr184.resp.CommonResp;
 import com.klbr184.service.AiSettingService;
 import com.klbr184.utils.SecurityUtil;
-import com.klbr184.vo.AiSettingsListVo;
+import com.klbr184.vo.PageVo;
 import com.klbr184.vo.AiSettingsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,12 +72,21 @@ public class AiSettingServiceImpl implements AiSettingService {
 
     @Override
     public CommonResp deleteSystem(Long id) {
+        //检查是否是本人
+        AiSetting temp = aiSettingMapper.selectById(id);
+        if (!temp.getUserId().equals(SecurityUtil.getUserId())) {
+            throw new SystemException(500, "无权删除");
+        }
         //判断是否有参数
         if (id == null || id.equals("")) {
             throw new SystemException(500, "删除系统失败,参数为空");
         }
         //删除数据库
-        aiSettingMapper.deleteById(id);
+        try {
+            aiSettingMapper.deleteById(id);
+        } catch (Exception e) {
+            throw new SystemException(500, "删除系统失败,原因:" + e.getMessage());
+        }
         return new CommonResp<>(200, "操作成功", null);
     }
 
@@ -97,6 +106,11 @@ public class AiSettingServiceImpl implements AiSettingService {
 
     @Override
     public CommonResp updateSystem(AiSettingReq req) {
+        //检查是否是本人
+        AiSetting temp = aiSettingMapper.selectById(req.getId());
+        if (!temp.getUserId().equals(SecurityUtil.getUserId())) {
+            throw new SystemException(500, "无权修改");
+        }
         //判断是否有参数
         if (Objects.isNull(req) || req.getValue() == null || req.getValue().equals("")) {
             throw new SystemException(500, "上传系统失败,缺失参数");
@@ -124,7 +138,7 @@ public class AiSettingServiceImpl implements AiSettingService {
         queryWrapper.lambda().eq(AiSetting::getShared, 1)
                 .select().orderByDesc(AiSetting::getCreateTime);
         aiSettingMapper.selectPage(aiSettingIPage, queryWrapper);
-        AiSettingsListVo aiSettingsListVo = new AiSettingsListVo();
+        PageVo aiSettingsListVo = new PageVo();
         aiSettingsListVo.setPage((int) aiSettingIPage.getCurrent());
         aiSettingsListVo.setTotalPage((int) aiSettingIPage.getPages());
         List<AiSettingsVo> list = new ArrayList<>();
@@ -163,6 +177,50 @@ public class AiSettingServiceImpl implements AiSettingService {
                 .setShared(0)
                 .setId(IdUtil.getSnowflakeNextId());
         aiSettingMapper.insert(aiSetting);
+        return new CommonResp<>(200, "操作成功", null);
+    }
+
+    @Override
+    public CommonResp getAllSystemListByPage(Integer page) {
+        IPage<AiSetting> aiSettingPage = new Page<>(page,10);
+        aiSettingMapper.selectPage(aiSettingPage, null);
+        PageVo aiSettingsListVo = new PageVo(page, (int) aiSettingPage.getPages(), aiSettingPage.getRecords());
+        return new CommonResp<>(200, "操作成功", aiSettingsListVo);
+    }
+
+    @Override
+    public CommonResp adminUpdateSystem(AiSettingReq req) {
+        //判断是否有参数
+        if (Objects.isNull(req) || req.getValue() == null || req.getValue().equals("")) {
+            throw new SystemException(500, "上传系统失败,缺失参数");
+        }
+        //判断是否有简介
+        if (Objects.isNull(req.getIntro()) || req.getIntro().equals("")) {
+            //没有标题则使用默认简介
+            req.setIntro("新设定");
+        }
+        //拷贝对象
+        AiSetting aiSetting = new AiSetting();
+        BeanUtil.copyProperties(req, aiSetting);
+        //补全属性
+        aiSetting.setUpdateTime(DateUtil.date());
+        //保存到数据库
+        aiSettingMapper.updateById(aiSetting);
+        return new CommonResp<>(200, "操作成功", null);
+    }
+
+    @Override
+    public CommonResp adminDeleteSystem(Long id) {
+        //判断是否有参数
+        if (id == null || id.equals("")) {
+            throw new SystemException(500, "删除系统失败,参数为空");
+        }
+        //删除数据库
+        try {
+            aiSettingMapper.deleteById(id);
+        } catch (Exception e) {
+            throw new SystemException(500, "删除系统失败!原因:" + e.getMessage());
+        }
         return new CommonResp<>(200, "操作成功", null);
     }
 

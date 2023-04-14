@@ -62,7 +62,7 @@ export default {
 .right-class{
   height: 100%;
 }
-.title {
+.menu-container .left-menu .title {
   text-align: center;
   font-size: 30px;
   font-weight: bold;

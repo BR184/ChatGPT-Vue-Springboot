@@ -1,6 +1,5 @@
 package com.klbr184.vo;
 
-import com.klbr184.entity.AiSetting;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AiSettingsListVo {
+public class PageVo {
     //当前页
     private Integer page;
     //总页数

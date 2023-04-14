@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Date;
+
 /**
  * (UserChat)表实体类
  *
@@ -41,7 +43,9 @@ public class UserChat {
     private Integer usageCompletionTokens;
     //OpenAI API中usage下的total_tokens
     private Integer usageTotalTokens;
-    //OpenAI API中usage下的total_tokens
+    //创建时间
+    private Date createTime;
+    //删除标记
     private Integer deleted;
 }
 

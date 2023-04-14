@@ -40,6 +40,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author KL
@@ -67,6 +68,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     @Override
     public CommonResp register(UserSaveReq req) {
         UserEntity userEntity = BeanUtil.copyProperties(req, UserEntity.class);
+        //去除用户名前后空格
+        userEntity.setUsername(userEntity.getUsername().trim());
+        //去除密码前后空格
+        userEntity.setPassword(userEntity.getPassword().trim());
+        //去除邮箱前后空格
+        userEntity.setEmail(userEntity.getEmail().trim());
         if (ObjectUtils.isEmpty(selectByUsername(userEntity.getUsername()))) {
             Long userId = IdUtil.getSnowflakeNextId();
             userEntity.setId(userId);
@@ -93,14 +100,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
         LoginUser user = (LoginUser) authenticate.getPrincipal();
         String userID = user.getUser().getId().toString();
-        String jwt = JwtUtil.createJWT(userID);
         UserEntity userEntity = user.getUser();
+        //如果用户被封禁
+        if (userEntity.getState() == 1) {
+            throw new SystemException(400, "该用户已被封禁！理由：" + userEntity.getBanMsg()+"，如有疑问，请联系管理员！");
+        }
         userEntity.setId(Long.valueOf(userID));
         userEntity.setLastLogin(DateUtil.date());
         userMapper.updateById(userEntity);
         Map<String, String> map = new HashMap<>();
+        String jwt = JwtUtil.createJWT(userID);
         map.put("token", jwt);
-        redisCache.setCacheObject("login:" + userID, user);
+        redisCache.setCacheObject("login:" + userID, user,3600*30, TimeUnit.SECONDS);
         return new CommonResp<>(200, "登陆成功", map);
     }
 

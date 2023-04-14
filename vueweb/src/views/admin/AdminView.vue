@@ -18,6 +18,10 @@
                         <i class="el-icon-user"></i>
                         <span slot="title">用户管理</span>
                     </el-menu-item>
+                    <el-menu-item index="ai_setting">
+                        <i class="el-icon-set-up"></i>
+                        <span slot="title">设定管理</span>
+                    </el-menu-item>
                     <el-submenu index="2">
                         <template slot="title">
                             <i class="el-icon-location"></i>

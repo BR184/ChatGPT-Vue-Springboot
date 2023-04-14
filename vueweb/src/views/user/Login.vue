@@ -55,7 +55,7 @@ export default {
                         }
                     })
                 } else {
-                    this.$message.error("登录失败！,错误代码" + data.code);
+                    this.$message.error("登录失败！原因：" + data.message);
                 }
             })
         },

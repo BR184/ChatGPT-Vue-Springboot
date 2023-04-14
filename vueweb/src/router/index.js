@@ -15,6 +15,7 @@ import AdminView from '../views/admin/AdminView.vue'
 import AdminIndexView from '../views/admin/AdminIndexView.vue'
 import RoleView from '../views/admin/RoleView.vue'
 import UserView from '../views/admin/UserView.vue'
+import AiSettingView from '../views/admin/AiSettingView.vue'
 
 Vue.use(VueRouter)
 
@@ -82,7 +83,8 @@ const routes = [
       {path:'',redirect:'index'},
       {path:'index',component:AdminIndexView},
       {path:'role',component:RoleView},
-      {path:'user',component:UserView}
+      {path:'user',component:UserView},
+      {path:'ai_setting',component:AiSettingView}
     ]
   }
 ]

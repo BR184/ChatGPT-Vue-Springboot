@@ -277,42 +277,32 @@ html {
     border: 1px #e74645 solid !important;
 
 }
-
-.chat_input,
-.el-textarea .el-input__inner:focus,
-.chat_input,
-.el-textarea .el-textarea__inner:focus {
+.chat_input,.el-textarea{
+    width: 100% !important;
+    height: 100% !important;
+}
+.chat_input textarea{
     border: 1px #e74645 solid !important;
     border-bottom: 0 !important;
     border-radius: 0 !important;
 }
-
-.chat_input,
-.el-textarea .el-textarea__inner,
-.chat_input,
-.el-textarea .el-textarea {
+.chat_input textarea {
     height: 100% !important;
     width: 100% !important;
     font-family: "Microsoft YaHei";
-    font-size: 24px !important;
-    font-weight: bold;
+    font-size: 18px !important;
+    font-weight: 500 !important;
     border: 1px #e6e6e6 solid !important;
     border-bottom: 0 !important;
     border-radius: 0 !important;
 }
 
-.new-sys-textarea,
-.el-textarea .el-input__inner:focus,
-.new-sys-textarea,
-.el-textarea .el-textarea__inner:focus {
+.new-sys-textarea .el-textarea__inner:focus {
     border: 1px #e74645 solid !important;
 }
 
-.new-sys-textarea,
-.el-textarea .el-textarea__inner,
-.new-sys-textarea,
-.el-textarea .el-textarea {
-    height: 400px !important;
+.new-sys-textarea .el-textarea__inner{
+    height: 200px !important;
     width: 100% !important;
     font-family: "Microsoft YaHei";
     font-size: 16px !important;
@@ -354,6 +344,7 @@ html {
 
 .chats_container .el-scrollbar__wrap {
     width: 105%;
+    margin-left: 50px;
     overflow-x: hidden !important;
     overflow-y: scroll !important;
 }

@@ -112,6 +112,7 @@ public class ChatServiceImpl implements ChatService {
         userChat.setUserId(SecurityUtil.getUserId());
         userChat.setChatId(chatID);
         userChat.setTitle(title);
+        userChat.setCreateTime(DateUtil.date());
         userChatMapper.insert(userChat);
         Chat chat = new Chat();
         chat.setChatId(chatID)

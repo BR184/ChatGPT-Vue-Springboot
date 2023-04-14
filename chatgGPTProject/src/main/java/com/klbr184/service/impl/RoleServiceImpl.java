@@ -47,8 +47,16 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public CommonResp getRole(Integer page) {
-        if (page == null || page < 1) {
+        if (page == null) {
             throw new SystemException(400, "页码错误");
+        }
+        //如果page为0，查询所有
+        if (page == 0) {
+            List<Role> roles = roleMapper.selectList(null);
+            if (roles == null || roles.size() == 0) {
+                return new CommonResp<>(200, "操作成功", null);
+            }
+            return new CommonResp<>(200, "操作成功", roles);
         }
         IPage<Role> iPage = new Page<>(page, 10);
         roleMapper.selectPage(iPage, null);
@@ -280,5 +288,16 @@ public class RoleServiceImpl implements RoleService {
         //最后删除角色
         roleMapper.deleteById(roleId);
         return new CommonResp<>(200, "操作成功", null);
+    }
+
+    @Override
+    public CommonResp getRoleByUserID(Long userID) {
+        //获取userRole
+        Map<String, Object> userRoleMap = new HashMap<>();
+        userRoleMap.put("user_id", userID);
+        List<UserRole> userRoles = userRoleMapper.selectByMap(userRoleMap);
+        //获取userRole的role_id
+        List<Integer> roleIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList());
+        return new CommonResp<>(200, "操作成功", roleIds);
     }
 }

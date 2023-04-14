@@ -23,4 +23,10 @@ public interface AiSettingService {
     CommonResp getSystemList(Integer page);
 
     CommonResp saveSystem(Long id);
+
+    CommonResp getAllSystemListByPage(Integer page);
+
+    CommonResp adminUpdateSystem(AiSettingReq req);
+
+    CommonResp adminDeleteSystem(Long id);
 }
