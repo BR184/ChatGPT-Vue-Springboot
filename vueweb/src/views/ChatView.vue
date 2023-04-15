@@ -2,8 +2,8 @@
     <div class="chat_container">
         <el-row :gutter="0" class="chat_row">
             <el-col :span="4" class="left_menu">
-                <el-menu style="height: 100%;" default-active="0" class="el-menu-vertical-demo" 
-                background-color="transparent" text-color="#909399" active-text-color="#e74645">
+                <el-menu style="height: 100%;" default-active="0" class="el-menu-vertical-demo"
+                    background-color="transparent" text-color="#909399" active-text-color="#e74645">
                     <!-- v-for遍历 el-menu-item -->
                     <el-menu-item v-for="(item, i) in chatList" :key="item.chatID" :index="i.toString()"
                         @click="getChatInfoAndContent(item.chatID)" class="chat-menu">
@@ -37,7 +37,7 @@
                 <el-row style="height: 30%">
                     <el-col :span="8" class="value_area">
                         <el-scrollbar ref="myScrollbar" class="value_inner">
-                            <span id="info">temperature 文本随机性(0-2)</span>
+                            <span id="info" style="margin-top:10px">temperature 文本随机性(0-2)</span>
                             <el-slider v-model="chat_from.temperature" id="sliderT" input-size="mini"
                                 :show-input-controls="false" show-input :max="2" :step="0.01" />
                             <span id="info">top_p 文本多样性(0-1)</span>
@@ -79,30 +79,33 @@
                             </el-autocomplete>
                         </el-scrollbar>
                     </el-col>
-                    <el-col :span="15" style="height: 100%" class="mid_container">
-                        <el-col style="height: 10%;" class="token_value">
-                            <el-link style="min-width:100px" @click="open1">
+                    <el-col :span="16" style="height: 100%" class="mid_container">
+                        <el-col style="height:15%" class="token_value">
+                            <el-link style="min-width:100px;" @click="open1">
                                 Token占用:
                                 <i class="el-icon-question"></i>
                             </el-link>
-                            <div style="width: 75%;" @click="open1">
+                            <div style="width: 80%;" @click="open1">
                                 <el-progress :percentage="percentage" :text-inside="true" :stroke-width="24"
                                     :color="customColors"></el-progress>
                             </div>
                         </el-col>
-                        <el-col style="height:90%">
+                        <el-col style="height:80%">
                             <!-- 使用tempMsg接收el-input的消息 -->
                             <el-input :disabled="inputDisabled" class="chat_input" style="height: 100%;width:90%"
-                                type="textarea" resize="none" placeholder="请输入内容" v-model="tempMsg"
-                                @keydown.enter="sendMsg()">
+                                type="textarea" resize="none" placeholder="请输入消息，快捷键：Ctrl+Enter换行，Enter发送" v-model="tempMsg">
                             </el-input>
                         </el-col>
+                        <div class="icon-send-btn">
+                            <i class="el-icon-s-promotion" @click="sendMsg()">
+                            </i>
+                        </div>
                     </el-col>
-                    <el-col :span="1" style="height:100%;">
+                    <!-- <el-col :span="1" style="height:100%;">
                         <el-button @click="sendMsg()">
                             发送
                         </el-button>
-                    </el-col>
+                    </el-col> -->
                 </el-row>
             </el-col>
         </el-row>
@@ -158,13 +161,37 @@
     border: 1px solid red;
     background-position: center;
 }*/
-.name{
+.icon-send-btn {
+    user-select: none;
+    position: absolute;
+    right: 2%;
+    bottom: 40%;
+    font-size: 30px;
+    border: 3px solid #f5f5f5;
+    padding: 3px;
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #909399;
+    transition: all 1s;
+}
+
+.icon-send-btn:hover {
+    color: #e74645;
+    border-color: #fb7756;
+    scale: 1.05;
+    box-shadow: 0 0 5px #999999;
+}
+
+.name {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space:nowrap;
+    white-space: nowrap;
     transition: all .5s;
 }
+
 .add-sys {
     margin-right: 5px;
     cursor: pointer;
@@ -194,20 +221,20 @@
 }
 
 .delete-button {
-    color: #606266!important;
+    color: #606266 !important;
     position: relative;
     top: 35%;
     float: right;
-    opacity: 0!important;
+    opacity: 0 !important;
     transition: all 0.3s;
 }
 
 .delete-button:hover {
-    color: #e74645!important;
+    color: #e74645 !important;
 }
 
 .chat-menu:hover .delete-button {
-    opacity: 1!important;
+    opacity: 1 !important;
 }
 
 .chat-menu {
@@ -280,15 +307,19 @@
     border: 1px #e74645 solid !important;
 
 }
-.chat_input,.el-textarea{
+
+.chat_input,
+.el-textarea {
     width: 100% !important;
     height: 100% !important;
 }
-.chat_input textarea{
+
+.chat_input textarea {
     border: 1px #e74645 solid !important;
     border-bottom: 0 !important;
     border-radius: 0 !important;
 }
+
 .chat_input textarea {
     height: 100% !important;
     width: 100% !important;
@@ -304,7 +335,7 @@
     border: 1px #e74645 solid !important;
 }
 
-.new-sys-textarea .el-textarea__inner{
+.new-sys-textarea .el-textarea__inner {
     height: 200px !important;
     width: 100% !important;
     font-family: "Microsoft YaHei";
@@ -351,6 +382,7 @@
     overflow-x: hidden !important;
     overflow-y: scroll !important;
 }
+
 .value_inner .el-scrollbar__wrap {
     width: 105%;
     overflow-x: hidden !important;
@@ -413,6 +445,7 @@
     box-sizing: border-box;
     background-position: center;
 }
+
 .sys-title-container {
     display: flex;
     flex-direction: row;
@@ -420,6 +453,7 @@
     justify-content: space-between;
     align-items: center;
 }
+
 .sys-value-container {
     display: flex;
     flex-direction: row;
@@ -427,7 +461,8 @@
     justify-content: space-between;
     align-items: center;
 }
-.sys-value-left-container{
+
+.sys-value-left-container {
     width: 90%;
     display: flex;
     flex-direction: row;
@@ -436,33 +471,38 @@
     align-items: start;
 }
 
-.el-icon-search-zoom{
+.el-icon-search-zoom {
     height: 100%;
     display: flex;
     flex-direction: column;
     flex-grow: 0;
-    height: 100%!important;
+    height: 100% !important;
     width: 20px !important;
     margin-right: 5px;
     margin-top: 10px;
-    transition: all 1s;
+    transition: all 0.2s;
 }
-.el-icon-search{
+
+.el-icon-search {
     width: 20px;
     height: 20px;
-    transition: all 1s;
+    transition: all 3s;
 }
-.el-icon-search-zoom:hover .el-icon-search{
+
+.el-icon-search-zoom:hover .el-icon-search {
     color: #e74645;
 }
-.el-icon-search-zoom:hover + .name{
+
+.el-icon-search-zoom:hover+.name {
     height: fit-content;
     line-height: 25px;
-    white-space:normal;
+    white-space: normal;
 }
-.el-icon-search-zoom:hover{
-    padding-bottom: 100%;
+
+.el-icon-search-zoom:hover {
+    padding-bottom: 50%
 }
+
 #info {
     text-overflow: clip;
     white-space: nowrap;
@@ -504,6 +544,7 @@ export default {
                     { min: 2, max: 1000, message: '长度在 2 到 1000 个字符', trigger: 'blur' }
                 ],
             },
+            downCode:0,
             addSysDialogVisible: false,
             editSysDialogVisible: false,
             inputDisabled: false,
@@ -560,7 +601,7 @@ export default {
         },
         //打开编辑设定对话框
         openEditSys(id) {
-            if(id==0){
+            if (id == 0) {
                 this.$message({
                     message: "系统默认设定不可编辑！",
                     type: "error"
@@ -570,7 +611,7 @@ export default {
             this.axios.get('/system/get?id=' + id)
                 .then(response => {
                     let data = response.data;
-                    if(data.code == 200) {
+                    if (data.code == 200) {
                         console.log(data)
                         this.edit_sys_from.intro = data.data.intro
                         this.edit_sys_from.value = data.data.value
@@ -582,11 +623,11 @@ export default {
                             message: "获取设定失败！",
                             type: "error"
                         });
-                    } 
+                    }
                 })
                 .catch(error => {
                     console.log(error);
-                });  
+                });
         },
         //新增设定
         addSys(form) {
@@ -626,7 +667,7 @@ export default {
         },
         //编辑设定
         editSys(form) {
-            form.id=this.temp_id
+            form.id = this.temp_id
             this.$refs.edit_sys_from.validate(valid => {
                 if (valid) {
                     //axios使用put方法发送设定
@@ -800,7 +841,7 @@ export default {
         },
         //加载页面时初始化数据
         created() {
-            this.head_url=this.$getHead()+this.$getUser().head;
+            this.head_url = this.$getHead() + this.$getUser().head;
             //axios使用get方法获取保存的对话
             this.axios.get('/chat/list')
                 .then(response => {
@@ -816,6 +857,22 @@ export default {
         },
         //发送消息
         sendMsg() {
+            //如果输入框被禁用则不允许发送消息
+            if (this.inputDisabled) {
+                this.$message({
+                    message: "请等待回复！",
+                    type: "warning"
+                });
+                return;
+            }
+            //如果输入框为空则不允许发送消息
+            if (this.tempMsg == '') {
+                this.$message({
+                    message: "请输入消息！",
+                    type: "warning"
+                });
+                return;
+            }
             //如果token占用达到100%则不允许发送消息
             if (this.percentage == 100) {
                 this.$message({
@@ -884,7 +941,7 @@ export default {
                     //判断是否获取成功
                     if (data.code == 200) {
                         var saves = data.data;
-                        saves.unshift({ "intro": "默认设定", "value": "You are a AI helper","id":0})
+                        saves.unshift({ "intro": "默认设定", "value": "You are a AI helper", "id": 0 })
                         var results = queryString ? saves.filter(this.createFilter(queryString)) : saves;
                         // 调用 callback 返回建议列表的数据
                         cb(results);
@@ -907,10 +964,31 @@ export default {
         handleSelect(item) {
         },
         handleIconClick(ev) {
-        }
+        },
     },
     mounted() {
         this.created();
+        document.onkeydown = () => {
+            var key = window.event.keyCode
+            if(key==17) 
+            { 
+                this.downCode=1;     
+            } 
+            if (key === 13) {
+                if(this.downCode==1){
+                    this.chat_from.message = this.chat_from.message+'\n'
+                    this.downCode=0;    
+                }else{
+                    this.sendMsg()
+                }
+            }
+        }
     },
+    beforeCreate() {
+        document.querySelector('html').setAttribute('style', 'overflow:hidden!important')
+    },
+    beforeDestroy() {
+        document.querySelector('html').setAttribute('style', 'overflow:auto')
+    }
 }
 </script>

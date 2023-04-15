@@ -93,13 +93,57 @@ const router = new VueRouter({
   mode:"history",
   routes:routes,
 })
-//var base = ["Index","Login","Register"];
 
-//router.beforeEach((to,from,next)=>{
+// var base = ["Index","Login","Register"];
+
+// router.beforeEach((to,from,next)=>{
 //  const token = localStorage.getItem("Token")
 //  base.forEach
 //  if(base.indexOf(to.name) !== -1 && !token) next({name:'Login'})
 //  else next()
-//})
+// })
+//路由守卫，判断是否登录
+router.beforeEach((to, from, next) => {
+  //主页路径，就直接next()
+  if (to.path === '/index') {
+    next()
+  }
+  //如果是登录页，并且没有登录，就直接next()
+  else if (to.path === '/login' && !localStorage.getItem("Token")) {
+    next()
+  }
+  //如果是登录页，并且登录了，就提示并跳转到主页
+  else if (to.path === '/login' && localStorage.getItem("Token")) {
+    alert("您已登录！")
+    next({ path: '/index' })
+  }
+  //如果是注册页，并且没有登录，就直接next()
+  else if (to.path === '/register' && !localStorage.getItem("Token")) {
+    next()
+  }
+  //如果是注销页，并且登录了，就直接next()
+  else if (to.path === '/logout' && localStorage.getItem("Token")) {
+    next()
+  }
+  //如果是注销页，并且没有登录，就提示并跳转到登录页
+  else if (to.path === '/logout' && !localStorage.getItem("Token")) {
+    alert("请先登录！")
+    next({ path: '/login' })
+  }
+  //如果是其他页面，就判断是否登录
+  else {
+    //如果登录了，就next()
+    if (localStorage.getItem("Token")) {
+      next()
+    }
+    //如果没有登录，先给出提示，然后跳转到登录页
+    else {
+      alert("请先登录！")
+      next({ path: '/login' })
+    }
+  }
+})
+
+        
 
 export default router

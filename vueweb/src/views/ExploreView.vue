@@ -1,36 +1,43 @@
 <template>
     <div class="shared-container">
-            <div class="container-top">
-                <h1 class="title-explore">探索并尝试各种AI设定</h1>
-                <el-pagination background layout="prev, pager, next"
-                    @current-change="handleCurrentChange" :current-page.sync="this.current_page" :page-count="this.total_page">
-                </el-pagination>
-            </div>
-            <div class="main-divider"></div>
-            <div class="central-container">
-                <div v-for="sys in sys_list" :key="sys.id" class="export-value-container">
-                    <div class="central-header">
-                        <h1 class="">主题：{{ sys.intro }}</h1>
-                        <el-button class="save-btn" v-if="user.id != sys.userId" type="danger"
-                            @click="saveSys(sys.id)">使用</el-button>
-                        <el-button v-else type="danger" @click="deleteSys(sys.id)">删除</el-button>
-                    </div>
-                    <span class="sys-name">使用数:{{ sys.fav }}
-                        &nbsp发布者:{{ sys.username }}
-                        &nbsp发布时间:{{ sys.createTime.substring(0, 10) }}
-                        &nbsp更新时间:<span v-if="sys.updateTime">{{ sys.updateTime.substring(0, 10) }}</span><span
-                            v-else>无</span>
-                    </span>
-                    <!-- 分割线 -->
-                    <el-divider class="sys-divider"></el-divider>
-                    <h3 class="sys-value">{{ sys.value }}</h3>
+        <div class="container-top">
+            <h1 class="title-explore">探索并尝试各种AI设定</h1>
+            <el-pagination background layout="prev, pager, next" @current-change="handleCurrentChange"
+                :current-page.sync="this.current_page" :page-count="this.total_page">
+            </el-pagination>
+        </div>
+        <div class="main-divider"></div>
+        <div class="central-container">
+            <div v-for="sys in sys_list" :key="sys.id" class="export-value-container">
+                <div class="central-header">
+                    <h1 class="">主题：{{ sys.intro }}</h1>
+                    <el-button class="save-btn" v-if="user.id != sys.userId" type="danger"
+                        @click="saveSys(sys.id)">使用</el-button>
+                    <el-button v-else type="danger" @click="deleteSys(sys.id)">删除</el-button>
                 </div>
+                <span class="sys-name">使用数:{{ sys.fav }}
+                    &nbsp发布者:{{ sys.username }}
+                    &nbsp发布时间:{{ sys.createTime.substring(0, 10) }}
+                    &nbsp更新时间:<span v-if="sys.updateTime">{{ sys.updateTime.substring(0, 10) }}</span><span v-else>无</span>
+                </span>
+                <!-- 分割线 -->
+                <el-divider class="sys-divider"></el-divider>
+                <h3 class="sys-value">{{ sys.value }}</h3>
             </div>
-            <div class="pagination-container">
-                <el-pagination background layout="prev, pager, next, jumper"
-                    @current-change="handleCurrentChange" :current-page.sync="this.current_page" :page-count="this.total_page">
-                </el-pagination>
+        </div>
+        <div class="pagination-container">
+            <el-pagination background layout="prev, pager, next, jumper" @current-change="handleCurrentChange"
+                :current-page.sync="this.current_page" :page-count="this.total_page">
+            </el-pagination>
+        </div>
+        <!-- 底部 -->
+        <el-footer id="footer">
+            <div class="footer">
+                <p>© 2023 GPT SHARE 聊天分享交流网站</p>
+                <p>Copyright © 1998 - 2023 KLBR184. All Rights Reserved.</p>
+                <p>KLBR184 版权所有｜营业执照｜鲁ICP备1XXXXXXX号-X｜客服电话：4006666666｜违法与不良信息举报邮箱：XXXXXXXXXX@klbr184.com</p>
             </div>
+        </el-footer>
     </div>
 </template>
 
@@ -39,7 +46,7 @@ export default {
     data() {
         return {
             sys_list: [],
-            current_page: 1 ,
+            current_page: 1,
             total_page: 1,
             user: []
         }
@@ -133,7 +140,7 @@ export default {
                 });
             });
         },
-        handleCurrentChange(val){
+        handleCurrentChange(val) {
             this.axios.get('/system/shared?page=' + val).then((resp) => {
                 const data = resp.data
                 if (data.code == 200) {
@@ -153,6 +160,12 @@ export default {
     mounted() {
         this.created();
     },
+    beforeCreate() {
+        document.querySelector('html').setAttribute('style', 'overflow-x:hidden!important')
+    },
+    beforeDestroy() {
+        document.querySelector('html').setAttribute('style', 'overflow-x:auto')
+    }
 }
 </script>
 
@@ -162,13 +175,15 @@ export default {
     border: 1px solid red;
     background-position: center;
 } */
-.shared-container{
+.shared-container {
     user-select: none;
 }
-.shared-container{
+
+.shared-container {
     width: 100%;
 }
-.title-explore{
+
+.title-explore {
     font-size: 60px;
     font-weight: 800;
     border: 0;
@@ -176,15 +191,17 @@ export default {
     color: #333333;
     margin-bottom: 20px;
 }
-.main-divider{
+
+.main-divider {
     margin-top: 50px;
     margin-bottom: 15px;
     margin-left: 5%;
     margin-right: 5%;
-    width: 90%!important;
+    width: 90% !important;
     height: 1px;
     background-color: #999999;
 }
+
 .save-btn {
     background-color: #facd60 !important;
     border-color: #facd60 !important;
@@ -238,15 +255,16 @@ export default {
     align-items: flex-start;
     text-align: start;
     text-overflow: ellipsis;
-    border: 2px solid #fb7756;
-    transition: all 0.3s;
+    border: 0px solid #ffee00;
+    box-shadow: 0 0 10px #ebebeb;
+    transition: all 0.5s;
 }
 
 .export-value-container:hover {
     scale: 1.1;
     z-index: 9999;
     border: 6px solid #e74645;
-
+    box-shadow: 0 0 20px #999999;
 }
 
 .scollbar-container {
@@ -258,6 +276,7 @@ export default {
     height: 95%;
     background-color: #f5f5f5;
 }
+
 .central-container {
     width: 90%;
     padding-left: 5%;
@@ -268,11 +287,12 @@ export default {
     justify-content: space-between;
     align-items: start;
 }
-.pagination-container{
+
+.pagination-container {
     padding-top: 100px;
     margin-top: 100px;
     scale: 1.65;
-    width: 90%;
+    width: 100%;
     height: 200px;
     display: flex;
     flex-wrap: wrap;
@@ -280,7 +300,8 @@ export default {
     justify-content: center;
     align-items: start;
 }
-.container-top{
+
+.container-top {
     margin-bottom: 0px;
     width: 90%;
     padding-left: 5%;
@@ -292,16 +313,21 @@ export default {
     justify-content: space-between;
     align-items: center;
 }
-.number:not(.active){
-    background-color: #ffffff!important;
+
+.number:not(.active) {
+    background-color: #ffffff !important;
 }
-.number,.active{
-    background-color: #e74645!important;
+
+.number,
+.active {
+    background-color: #e74645 !important;
 }
-.number:not(.active):hover{
+
+.number:not(.active):hover {
     color: #e74645 !important;
 }
-.number:hover{
-    color: #606266!important;
+
+.number:hover {
+    color: #606266 !important;
 }
 </style>

@@ -52,7 +52,14 @@
                 </div>
             </div>
         </div>
-        1212112
+        <!-- 底部 -->
+        <el-footer id="footer">
+            <div class="footer">
+                <p>© 2023 GPT SHARE 聊天分享交流网站</p>
+                <p>Copyright © 1998 - 2023 KLBR184. All Rights Reserved.</p>
+                <p>KLBR184 版权所有｜营业执照｜鲁ICP备1XXXXXXX号-X｜客服电话：4006666666｜违法与不良信息举报邮箱：XXXXXXXXXX@klbr184.com</p>
+            </div>
+        </el-footer>
     </div>
 </template>
 
@@ -89,7 +96,7 @@ export default {
 </script>
 
 <style>
-.index-info-page-text{
+.index-info-page-text {
     display: block;
     font-weight: 400;
     line-height: 40px;
@@ -100,6 +107,7 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .index-info-page-title {
     font-size: 40px;
     margin: 10px 0 10px 0;
@@ -187,6 +195,7 @@ export default {
     text-align: center;
     box-shadow: none;
 }
+
 .central_button:hover {
     box-shadow: 0 0 10px #fff;
     transform: translate(-40%, -50%);

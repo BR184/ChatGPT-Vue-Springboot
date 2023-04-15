@@ -45,12 +45,6 @@
     <div>
       <router-view/>
     </div>
-    <!-- 底部 -->
-    <el-footer v-if="nav_show" id="footer">
-      <div class="footer">
-        <p>© 2020 GPT SHARE</p>
-      </div>
-    </el-footer>
   </el-container>
 </template>
 <script>
@@ -61,6 +55,7 @@ export default {
     token: null,
     nav_show: true,
     adm_show: false,
+    footer_show: true
   }),
   methods: {
     home() {
@@ -120,6 +115,16 @@ export default {
   height: 100%;
 }
 
+.el-footer{
+  text-align: center;
+  color: #fff;
+  background-color: #e34847;
+  height: 200px!important;
+  width: 100%!important;
+  font-size: small;
+  margin-top: 169px;
+  padding: 100px 0 0 0!important;
+}
 .nav {
   position: fixed;
   display: flex;
