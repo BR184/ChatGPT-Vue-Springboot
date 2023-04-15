@@ -49,25 +49,27 @@
             <el-form :model="editUserFrom" label-width="80px">
                 <!-- 显示用户ID和用户名和头像，并为用户名和头像添加重置按钮 -->
                 <el-form-item label="ID" prop="id">
-                    <el-tag type="info">{{editUserFrom.id}}</el-tag>
+                    <el-tag type="info">{{ editUserFrom.id }}</el-tag>
                 </el-form-item>
                 <el-form-item label="用户名" prop="username">
-                    <el-tag type="info">{{editUserFrom.username}}</el-tag>
-                    <el-button style="float: right" type="text" size="small" @click="resetUsername(editUserFrom.id)">重置</el-button>
+                    <el-tag type="info">{{ editUserFrom.username }}</el-tag>
+                    <el-button style="float: right" type="text" size="small"
+                        @click="resetUsername(editUserFrom.id)">重置</el-button>
                 </el-form-item>
                 <el-form-item label="头像" prop="avatar">
                     <el-avatar shape="square" :size="40" :src="editUserFrom.avatar"></el-avatar>
-                    <el-button style="float: right" type="text" size="small" @click="resetAvatar(editUserFrom.id)">重置</el-button>
+                    <el-button style="float: right" type="text" size="small"
+                        @click="resetAvatar(editUserFrom.id)">重置</el-button>
                 </el-form-item>
                 <el-form-item label="余额">
                     <el-input v-model="editUserFrom.coin"></el-input>
                 </el-form-item>
-                <el-form-item  label="用户角色">
+                <el-form-item label="用户角色">
                     <div class="per-choose-container">
                         <!-- 新增权限下拉框 -->
                         <el-select v-model="editUserFrom.roles" multiple placeholder="请选择">
-                            <el-option v-for="item in this.roles" :key="item.id"
-                                :label="item.roleName" :value="item.id"></el-option>
+                            <el-option v-for="item in this.roles" :key="item.id" :label="item.roleName"
+                                :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </el-form-item>
@@ -96,14 +98,14 @@ export default {
         return {
             editUserDialogFormVisible: false,
             tableData: [],
-            roles:[],
-            editUserFrom:{
+            roles: [],
+            editUserFrom: {
                 id: 0,
                 username: '',
                 avatar: '',
                 coin: 0,
                 state: 0,
-                roles:[],
+                roles: [],
                 banMsg: '',
             },
             page: 1,
@@ -117,15 +119,15 @@ export default {
             this.getTableData(this.page);
         },
         // 状态翻译
-        stateTranslate(row){
-            switch(row.state){
-	          case 0:
-	            return '正常'
-	          case 1:
-	            return '封禁'
-	          default:
-	            return '其他'
-	        }
+        stateTranslate(row) {
+            switch (row.state) {
+                case 0:
+                    return '正常'
+                case 1:
+                    return '封禁'
+                default:
+                    return '其他'
+            }
         },
         //获取角色列表
         getTableData(page) {
@@ -145,36 +147,94 @@ export default {
         },
         //编辑
         handleEdit(row) {
-            this.editUserDialogFormVisible = true;
             this.editUserFrom.id = row.id;
             this.editUserFrom.username = row.username;
             this.editUserFrom.coin = row.coin;
             this.editUserFrom.state = row.state;
             this.editUserFrom.banMsg = row.banMsg;
             this.editUserFrom.avatar = row.head;
-        },
-        //提交编辑
-        submitEditUserFrom(from){
-            this.axios.put('/user/manage', from).then(res => {
+            //获取角色列表
+            this.axios.get('/role/user?id=' + row.id).then(res => {
                 const data = res.data;
+                this.editUserFrom.roles = [];
                 if (data.code == 200) {
-                    this.$message.success("编辑成功！");
-                    this.editUserDialogFormVisible = false;
-                    this.getTableData(this.page);
+                    const tempRoleIds = data.data;
+                    if (tempRoleIds != null) {
+                        for (let i = 0; i < tempRoleIds.length; i++) {
+                            console.log(tempRoleIds[i]);
+                            this.editUserFrom.roles.push(tempRoleIds[i]);
+                        }
+                    }
+                    //获取全部角色列表
+                    this.axios.get('/role?page=0').then(res => {
+                        const data = res.data;
+                        if (data.code == 200) {
+                            this.roles = data.data;
+                            this.editUserDialogFormVisible = true;
+                        } else {
+                            this.$message.error("获取角色列表失败！" + data.message);
+                        }
+                    });
                 } else {
-                    this.$message.error("编辑失败！" + data.message);
+                    this.$message.error("获取角色列表失败！" + data.message);
                 }
             });
         },
+        //提交编辑
+        submitEditUserFrom(from) {
+            if (from.roles.length == 0&&from.state==0) {
+                //如果没有选择角色，就相当于封禁用户，先给出提示，再输入禁用理由
+                this.$confirm('因为该用户不属于任何角色，将封禁用户，是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    //输入禁用理由
+                    this.$prompt('请输入禁用理由', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                    }).then(({ value }) => {
+                        from.state = 1;
+                        from.banMsg = value;
+                        this.axios.put('/user/manage', from).then(res => {
+                            const data = res.data;
+                            if (data.code == 200) {
+                                this.$message.success("编辑成功！");
+                                this.editUserDialogFormVisible = false;
+                                this.getTableData(this.page);
+                            } else {
+                                this.$message.error("编辑失败！" + data.message);
+                            }
+                        });
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消输入'
+                        });
+                    });
+                });
+            } else {
+                this.axios.put('/user/manage', from).then(res => {
+                    const data = res.data;
+                    if (data.code == 200) {
+                        this.$message.success("编辑成功！");
+                        this.editUserDialogFormVisible = false;
+                        this.getTableData(this.page);
+                    } else {
+                        this.$message.error("编辑失败！" + data.message);
+                    }
+                });
+            }
+        },
         //重置用户名
-        resetUsername(id){
+        resetUsername(id) {
             //确定重置用户名
             this.$confirm('此操作将重置用户名，是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                this.axios.get('/user/reset_username?id='+id).then(res => {
+                this.axios.get('/user/reset_username?id=' + id).then(res => {
                     const data = res.data;
                     if (data.code == 200) {
                         this.$message.success("重置成功！");
@@ -188,18 +248,18 @@ export default {
                 this.$message({
                     type: 'info',
                     message: '已取消重置'
-                });          
+                });
             });
         },
         //重置头像
-        resetAvatar(id){
+        resetAvatar(id) {
             //确定重置头像
             this.$confirm('此操作将重置头像，是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                this.axios.get('/user/reset_avatar?id='+id).then(res => {
+                this.axios.get('/user/reset_avatar?id=' + id).then(res => {
                     const data = res.data;
                     if (data.code == 200) {
                         this.$message.success("重置成功！");
@@ -213,16 +273,16 @@ export default {
                 this.$message({
                     type: 'info',
                     message: '已取消重置'
-                });          
+                });
             });
         },
         //分页
-        handleCurrentChange(val){
+        handleCurrentChange(val) {
             this.page = val;
             this.getTableData(this.page);
         },
         //注册按钮跳转
-        toRegister(){
+        toRegister() {
             this.$router.push('/register');
         },
     },
@@ -233,13 +293,15 @@ export default {
 </script>
 
 <style>
-.el-button--text{
+.el-button--text {
     color: #fb7756 !important;
 }
-.el-button--text:hover{
+
+.el-button--text:hover {
     color: #e74645 !important;
 }
-.el-button--default:hover{
+
+.el-button--default:hover {
     color: #1ac0c6 !important;
 }
 </style>

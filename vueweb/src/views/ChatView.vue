@@ -56,7 +56,7 @@
                                 <i class="el-icon-plus el-input__icon add-sys" slot="suffix" @click="openAddNewSys">
                                 </i>
                                 <template slot-scope="{item}">
-                                    <div class="sys-value-container">
+                                    <div class="sys-title-container">
                                         <span class="intro">{{ item.intro }}</span>
                                         <!-- 编辑设定 -->
                                         <i class="el-icon-edit el-input__icon edit-sys" slot="suffix"
@@ -64,7 +64,12 @@
                                         </i>
                                     </div>
                                     <div class="sys-value-container">
-                                        <div class="name">{{ item.value }}</div>
+                                        <div class="sys-value-left-container">
+                                            <div class="el-icon-search-zoom">
+                                                <i class="el-icon-search"></i>
+                                            </div>
+                                            <div class="name">{{ item.value }}</div>
+                                        </div>
                                         <!-- 删除设定 -->
                                         <i class="el-icon-delete el-input__icon delete-sys" slot="suffix"
                                             @click="deleteSys(item.id)">
@@ -153,14 +158,12 @@
     border: 1px solid red;
     background-position: center;
 }*/
-html {
-    overflow: hidden;
-}
 .name{
-    max-width: 92%;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap;
+    transition: all .5s;
 }
 .add-sys {
     margin-right: 5px;
@@ -388,7 +391,6 @@ html {
 }
 
 .value_area {
-    padding-top: 10px;
     height: 100%;
 }
 
@@ -411,7 +413,13 @@ html {
     box-sizing: border-box;
     background-position: center;
 }
-
+.sys-title-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
 .sys-value-container {
     display: flex;
     flex-direction: row;
@@ -419,7 +427,42 @@ html {
     justify-content: space-between;
     align-items: center;
 }
+.sys-value-left-container{
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: start;
+    align-items: start;
+}
 
+.el-icon-search-zoom{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 0;
+    height: 100%!important;
+    width: 20px !important;
+    margin-right: 5px;
+    margin-top: 10px;
+    transition: all 1s;
+}
+.el-icon-search{
+    width: 20px;
+    height: 20px;
+    transition: all 1s;
+}
+.el-icon-search-zoom:hover .el-icon-search{
+    color: #e74645;
+}
+.el-icon-search-zoom:hover + .name{
+    height: fit-content;
+    line-height: 25px;
+    white-space:normal;
+}
+.el-icon-search-zoom:hover{
+    padding-bottom: 100%;
+}
 #info {
     text-overflow: clip;
     white-space: nowrap;

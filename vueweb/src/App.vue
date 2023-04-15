@@ -3,11 +3,11 @@
     <el-header v-if="nav_show" id="header">
       <el-row class="nav">
         <!-- 左侧 -->
-        <el-col :span="3">
+        <el-col :span="4">
           <!-- LOGO -->
-          <img src="xxlogoxx" alt="LOGO" />
+          <img src="../src/assets/GPT SHARE LOGO.png" width="200" alt="LOGO" />
         </el-col>
-        <el-col :span="7">
+        <el-col :span="6">
           <!-- 菜单 -->
           <el-menu class="meun" :default-active="activeIndex" mode="horizontal" background-color=#fff
             active-text-color="#e74645" style="height: 100%;" :router="true">
@@ -43,8 +43,14 @@
     </el-header>
     <!-- 其余内容 -->
     <div>
-      <router-view style="height:100%" />
+      <router-view/>
     </div>
+    <!-- 底部 -->
+    <el-footer v-if="nav_show" id="footer">
+      <div class="footer">
+        <p>© 2020 GPT SHARE</p>
+      </div>
+    </el-footer>
   </el-container>
 </template>
 <script>

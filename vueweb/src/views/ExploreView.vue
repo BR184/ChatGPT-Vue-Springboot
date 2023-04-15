@@ -1,13 +1,12 @@
 <template>
     <div class="shared-container">
-        <el-scrollbar class="scollbar-container">
             <div class="container-top">
                 <h1 class="title-explore">探索并尝试各种AI设定</h1>
                 <el-pagination background layout="prev, pager, next"
                     @current-change="handleCurrentChange" :current-page.sync="this.current_page" :page-count="this.total_page">
                 </el-pagination>
             </div>
-            <el-divider class="main-divider"></el-divider>
+            <div class="main-divider"></div>
             <div class="central-container">
                 <div v-for="sys in sys_list" :key="sys.id" class="export-value-container">
                     <div class="central-header">
@@ -32,7 +31,6 @@
                     @current-change="handleCurrentChange" :current-page.sync="this.current_page" :page-count="this.total_page">
                 </el-pagination>
             </div>
-        </el-scrollbar>
     </div>
 </template>
 
@@ -167,11 +165,8 @@ export default {
 .shared-container{
     user-select: none;
 }
-.shared-container .el-scrollbar__view{
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
+.shared-container{
+    width: 100%;
 }
 .title-explore{
     font-size: 60px;
@@ -182,7 +177,13 @@ export default {
     margin-bottom: 20px;
 }
 .main-divider{
+    margin-top: 50px;
+    margin-bottom: 15px;
+    margin-left: 5%;
+    margin-right: 5%;
     width: 90%!important;
+    height: 1px;
+    background-color: #999999;
 }
 .save-btn {
     background-color: #facd60 !important;
@@ -218,7 +219,7 @@ export default {
 }
 
 .shared-container {
-    position: fixed;
+    height: 100%;
     width: 100%;
     background-color: #f5f5f5;
 }
@@ -259,18 +260,20 @@ export default {
 }
 .central-container {
     width: 90%;
+    padding-left: 5%;
+    padding-right: 5%;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: start;
 }
 .pagination-container{
     padding-top: 100px;
     margin-top: 100px;
     scale: 1.65;
     width: 90%;
-    height: 300px;
+    height: 200px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -278,9 +281,10 @@ export default {
     align-items: start;
 }
 .container-top{
-    margin-top: 50px;
     margin-bottom: 0px;
     width: 90%;
+    padding-left: 5%;
+    padding-right: 5%;
     height: 100px;
     display: flex;
     flex-wrap: wrap;

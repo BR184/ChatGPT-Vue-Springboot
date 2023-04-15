@@ -291,7 +291,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public CommonResp getRoleByUserID(Long userID) {
+    public CommonResp getRoleIdByUserID(Long userID) {
         //获取userRole
         Map<String, Object> userRoleMap = new HashMap<>();
         userRoleMap.put("user_id", userID);

@@ -8,9 +8,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.klbr184.entity.LoginUser;
+import com.klbr184.entity.Role;
 import com.klbr184.entity.UserEntity;
 import com.klbr184.entity.UserRole;
 import com.klbr184.exception.SystemException;
+import com.klbr184.mapper.RoleMapper;
 import com.klbr184.mapper.UserMapper;
 import com.klbr184.mapper.UserRoleMapper;
 import com.klbr184.req.UpdateUserInfoReq;
@@ -18,6 +20,7 @@ import com.klbr184.req.UserAuthReq;
 import com.klbr184.req.UserSaveReq;
 import com.klbr184.req.adminUpdateUserInfoReq;
 import com.klbr184.resp.CommonResp;
+import com.klbr184.service.RoleService;
 import com.klbr184.service.UserService;
 import com.klbr184.utils.JwtUtil;
 import com.klbr184.utils.RedisCache;
@@ -41,6 +44,7 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author KL
@@ -60,6 +64,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRoleMapper userRoleMapper;
+    @Autowired
+    private RoleMapper roleMapper;
+    @Autowired
+    private RoleService roleService;
     @Value("${oss.bucketName}")
     private String bucketName;
     @Value("${oss.endpoint}")
@@ -226,10 +234,50 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     @Override
     public CommonResp adminUpdateUserInfo(adminUpdateUserInfoReq req) {
+        Role roleOfUser = roleMapper.selectById(2);
+        if ((!req.getRoles().contains(roleOfUser.getId()))&&req.getState()!=1){
+            throw new SystemException(400, "除了禁用用户，用户必须包含："+roleOfUser.getRoleName()+" 角色");
+        }
         UserEntity user = userMapper.selectById(req.getId());
         if (user == null) {
             throw new SystemException(400, "用户不存在");
         }
+        //增加或移除用户角色
+        //获取用户角色
+        CommonResp commonResp = roleService.getRoleIdByUserID(req.getId());
+        List<Integer> userRoleIds = (List<Integer>) commonResp.getData();
+        //获取所有角色
+        List<Role> allRoles = roleMapper.selectList(null);
+        List<Integer> allRoleIds = allRoles.stream().map(Role::getId).collect(Collectors.toList());
+        //需要增加的角色和需要移除的角色
+        List<Integer> addRoleIds = new ArrayList<>();
+        List<Integer> removeRoleIds = new ArrayList<>();
+        //遍历所有角色
+        for (Integer allRoleId : allRoleIds) {
+            //如果用户角色包含所有角色，但是请求中不包含所有角色，需要移除
+            if (userRoleIds.contains(allRoleId)&&!req.getRoles().contains(allRoleId)){
+                removeRoleIds.add(allRoleId);
+            }
+            //如果用户角色不包含所有角色，但是请求中包含所有角色，需要增加
+            if (!userRoleIds.contains(allRoleId)&&req.getRoles().contains(allRoleId)){
+                addRoleIds.add(allRoleId);
+            }
+        }
+        //增加角色
+        for (Integer addRoleId : addRoleIds) {
+            UserRole newUserRole = new UserRole();
+            newUserRole.setUserId(req.getId());
+            newUserRole.setRoleId(addRoleId);
+            userRoleMapper.insert(newUserRole);
+        }
+        //移除角色
+        for (Integer removeRoleId : removeRoleIds) {
+            QueryWrapper<UserRole> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id",req.getId());
+            queryWrapper.eq("role_id",removeRoleId);
+            userRoleMapper.delete(queryWrapper);
+        }
+        //更新用户信息
         UserEntity newUser = new UserEntity();
         BeanUtil.copyProperties(req, newUser,"username");
         userMapper.updateById(newUser);

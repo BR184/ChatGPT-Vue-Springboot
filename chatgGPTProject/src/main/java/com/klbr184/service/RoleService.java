@@ -17,5 +17,5 @@ public interface RoleService {
 
     CommonResp deleteRole(Integer roleId);
 
-    CommonResp getRoleByUserID(Long userID);
+    CommonResp getRoleIdByUserID(Long userID);
 }
