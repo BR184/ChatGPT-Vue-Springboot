@@ -96,6 +96,9 @@ export default {
 </script>
 
 <style>
+.block{
+    user-select: none;
+}
 .index-info-page-text {
     display: block;
     font-weight: 400;

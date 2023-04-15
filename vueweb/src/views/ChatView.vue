@@ -53,6 +53,8 @@
                             <el-autocomplete v-model="chat_from.system" class="value_choose" popper-class="my-autocomplete"
                                 :fetch-suggestions="querySearch" placeholder="请输入内容" @select="handleSelect">
                                 <!-- 增加设定 -->
+                                <i class="el-icon-circle-close clear-sys" slot="suffix" @click="clearSys">
+                                </i>
                                 <i class="el-icon-plus el-input__icon add-sys" slot="suffix" @click="openAddNewSys">
                                 </i>
                                 <template slot-scope="{item}">
@@ -174,7 +176,7 @@
     border-radius: 10px;
     background-color: #fff;
     color: #909399;
-    transition: all 1s;
+    transition: all 0.2s;
 }
 
 .icon-send-btn:hover {
@@ -197,7 +199,14 @@
     cursor: pointer;
     transition: all 0.3s;
 }
-
+.clear-sys {
+    margin-right: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.clear-sys:hover {
+    color: #e74645 !important;
+}
 .add-sys:hover {
     color: #e74645;
 }
@@ -438,7 +447,9 @@
     padding-bottom: 10%;
     float: left;
 }
-
+.value_choose .el-input__inner{
+    padding-right: 60px!important;
+}
 .chat_input {
     width: 100%;
     height: 100%;
@@ -628,6 +639,12 @@ export default {
                 .catch(error => {
                     console.log(error);
                 });
+        },
+        //清空设定栏
+        clearSys() {
+            this.chat_from.system = ''
+            document.activeElement.blur();
+
         },
         //新增设定
         addSys(form) {

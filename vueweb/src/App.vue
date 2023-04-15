@@ -126,6 +126,7 @@ export default {
   padding: 100px 0 0 0!important;
 }
 .nav {
+  user-select: none;
   position: fixed;
   display: flex;
   flex-direction: row;
