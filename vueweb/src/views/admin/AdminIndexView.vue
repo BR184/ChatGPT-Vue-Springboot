@@ -76,10 +76,13 @@ export default {
         }
     },
     mounted() {
-        setInterval(() => {
+        var update = setInterval(() => {
             this.datenow = this.getCurrentTime();
             this.getBasicStatistic();
         }, 1000);
+        this.$once('hook:beforeDestroy', () => {            
+        clearInterval(update);                                    
+        })
     },
 }
 </script>

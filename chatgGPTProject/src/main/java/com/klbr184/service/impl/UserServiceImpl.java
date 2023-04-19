@@ -78,8 +78,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         UserEntity userEntity = BeanUtil.copyProperties(req, UserEntity.class);
         //去除用户名前后空格
         userEntity.setUsername(userEntity.getUsername().trim());
-        //去除密码前后空格
-        userEntity.setPassword(userEntity.getPassword().trim());
         //去除邮箱前后空格
         userEntity.setEmail(userEntity.getEmail().trim());
         if (ObjectUtils.isEmpty(selectByUsername(userEntity.getUsername()))) {
@@ -104,7 +102,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword());
             authenticate = authenticationConfiguration.getAuthenticationManager().authenticate(authenticationToken);
         } catch (Exception e) {
-            throw new RuntimeException("登陆失败");
+            throw new RuntimeException("登陆失败,用户名或密码错误！");
         }
         LoginUser user = (LoginUser) authenticate.getPrincipal();
         String userID = user.getUser().getId().toString();

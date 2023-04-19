@@ -40,7 +40,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (Objects.isNull(user)) {
             throw new RuntimeException("用户名或密码错误");
         }
-        //TODO 查询对应的权限信息
+        //查询对应的权限信息
         List<String> permission = permissionMapper.selectPermissionsByUserID(user.getId());
         return new LoginUser(user,permission);
     }

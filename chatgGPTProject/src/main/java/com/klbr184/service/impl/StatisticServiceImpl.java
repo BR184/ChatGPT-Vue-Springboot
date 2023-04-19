@@ -10,6 +10,7 @@ import com.klbr184.resp.CommonResp;
 import com.klbr184.service.StatisticService;
 import com.klbr184.utils.RedisUtil;
 import com.klbr184.vo.BasicStatisticVo;
+import com.klbr184.vo.IndexStatisticVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,5 +50,21 @@ public class StatisticServiceImpl implements StatisticService {
             throw new SystemException(500, "查询失败: " + e.getMessage());
         }
         return new CommonResp<>(200, "操作成功", basicStatisticVo);
+    }
+
+    @Override
+    public CommonResp getIndexStatistic() {
+        IndexStatisticVo indexStatisticVo = new IndexStatisticVo();
+        try {
+            //查询所有设定的数量
+            indexStatisticVo.setTotalAiSettingNum(aiSettingMapper.selectList(null).size());
+            //查询所有聊天的数量
+            indexStatisticVo.setTotalNewChatNum(userChatMapper.selectList(null).size());
+            //查询所有分享的数量
+            indexStatisticVo.setTotalNewShareNum(0);
+        } catch (Exception e) {
+            throw new SystemException(500, "查询失败: " + e.getMessage());
+        }
+        return new CommonResp<>(200, "操作成功", indexStatisticVo);
     }
 }

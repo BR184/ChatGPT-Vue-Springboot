@@ -32,7 +32,7 @@ public class UserController {
     //注册
     @PostMapping("register")
     public CommonResp register(@RequestBody UserSaveReq req){
-        req.setPassword(passwordEncoder.encode(req.getPassword()));
+        req.setPassword(passwordEncoder.encode(req.getPassword().trim()));
         req.setRegTime(DateUtil.date());
         return userService.register(req);
     }

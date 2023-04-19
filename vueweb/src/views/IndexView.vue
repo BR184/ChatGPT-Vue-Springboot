@@ -3,7 +3,7 @@
 
         <div class="block" style="position: relative;">
             <el-carousel height="500px">
-                <el-carousel-item v-for="item, index in title" :key="item">
+                <el-carousel-item v-for="item,index in title" :key="index">
                     <div :class="index % 2 == 0 ? 'head-1' : 'head-2'">
                         <img :src="item.src" class="index-head-img">
                         <h1>{{ item.value }}</h1>
@@ -19,7 +19,9 @@
         </div>
         <div class="index-mid-container">
             <div class="index-info-page">
-                <h1 class="index-info-page-title">聊天</h1>
+                <h1 class="index-info-page-title">聊天
+                    <el-tag type="danger" class="index_title_tag" effect="dark">共创建{{this.totalAiSettingNum}}个</el-tag>
+                </h1>
                 <div class="index-info-page-value">
                     <span class="index-info-page-text">
                         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
@@ -30,7 +32,9 @@
                 </div>
             </div>
             <div class="index-info-page">
-                <h1 class="index-info-page-title">探索</h1>
+                <h1 class="index-info-page-title">探索
+                    <el-tag type="danger" class="index_title_tag" effect="dark">共发布{{this.totalNewChatNum}}条</el-tag>
+                </h1>
                 <div class="index-info-page-value">
                     <span class="index-info-page-text">
                         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
@@ -41,7 +45,9 @@
                 </div>
             </div>
             <div class="index-info-page">
-                <h1 class="index-info-page-title">分享</h1>
+                <h1 class="index-info-page-title">分享
+                    <el-tag type="danger" class="index_title_tag" effect="dark">共分享{{this.totalNewShareNum}}个</el-tag>
+                </h1>
                 <div class="index-info-page-value">
                     <span class="index-info-page-text">
                         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
@@ -83,19 +89,50 @@ export default {
                 src: require('../../static/TITLE4.png'),
                 value: '探索别人分享的AI参数，体验不同的AI对话效果，让你的问题得到更好的解决。'
             },
-            ]
+            ],
+            totalAiSettingNum: 0,
+            totalNewChatNum: 0,
+            totalNewShareNum: 0,
         }
     },
     methods: {
         chat() {
             this.$router.push({ path: '/chat' })
         },
+        getAndSetStatistic(){
+            //获取并设置统计数据
+            this.axios.get('/statistic/index').then(resp => {
+                const data = resp.data;
+                this.totalAiSettingNum = data.data.totalAiSettingNum;
+                this.totalNewChatNum = data.data.totalNewChatNum;
+                this.totalNewShareNum = data.data.totalNewShareNum;
+            })
+        },
+
+    },
+    mounted() {
+        this.getAndSetStatistic();
+        var update = setInterval(() => {
+                this.getAndSetStatistic();
+            }, 10000);
+        this.$once('hook:beforeDestroy', () => {            
+        clearInterval(update);
+        });
     }
 
 }
 </script>
 
 <style>
+.index_title_tag{
+    position: absolute !important;
+    margin-top: 20px;
+    margin-left: 10px;
+    /*黑体*/
+    font-family: "黑体";
+    font-size: large;
+    font-weight: bolder;
+}
 .block{
     user-select: none;
 }

@@ -9,4 +9,6 @@ import com.klbr184.resp.CommonResp;
  */
 public interface StatisticService {
     CommonResp getBasicStatistic();
+
+    CommonResp getIndexStatistic();
 }
