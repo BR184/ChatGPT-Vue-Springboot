@@ -132,11 +132,39 @@ public class AiSettingServiceImpl implements AiSettingService {
     }
 
     @Override
-    public CommonResp getSystemList(Integer page) {
+    public CommonResp getSystemList(Integer page, Integer mode) {
         IPage<AiSetting> aiSettingIPage = new Page<>(page, 18);
         QueryWrapper<AiSetting> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(AiSetting::getShared, 1)
-                .select().orderByDesc(AiSetting::getCreateTime);
+        switch (mode){
+            case 1:
+                //按创建时间降序
+                queryWrapper.lambda().eq(AiSetting::getShared, 1).select().orderByDesc(AiSetting::getCreateTime);
+                break;
+            case 2:
+                //按创建时间升序
+                queryWrapper.lambda().eq(AiSetting::getShared, 1).select().orderByAsc(AiSetting::getCreateTime);
+                break;
+            case 3:
+                //按使用量降序
+                queryWrapper.lambda().eq(AiSetting::getShared, 1).select().orderByDesc(AiSetting::getFav);
+                break;
+            case 4:
+                //按使用量升序
+                queryWrapper.lambda().eq(AiSetting::getShared, 1).select().orderByAsc(AiSetting::getFav);
+                break;
+            case 5:
+                //按更新时间降序
+                queryWrapper.lambda().eq(AiSetting::getShared, 1).select().orderByDesc(AiSetting::getUpdateTime);
+                break;
+            case 6:
+                //按更新时间升序
+                queryWrapper.lambda().eq(AiSetting::getShared, 1).select().orderByAsc(AiSetting::getUpdateTime);
+                break;
+            default:
+                //默认按创建时间降序
+                queryWrapper.lambda().eq(AiSetting::getShared, 1).select().orderByDesc(AiSetting::getCreateTime);
+                break;
+        }
         aiSettingMapper.selectPage(aiSettingIPage, queryWrapper);
         PageVo aiSettingsListVo = new PageVo();
         aiSettingsListVo.setPage((int) aiSettingIPage.getCurrent());
@@ -181,9 +209,41 @@ public class AiSettingServiceImpl implements AiSettingService {
     }
 
     @Override
-    public CommonResp getAllSystemListByPage(Integer page) {
+    public CommonResp getAllSystemListByPage(Integer page,Integer mode) {
         IPage<AiSetting> aiSettingPage = new Page<>(page,10);
-        aiSettingMapper.selectPage(aiSettingPage, null);
+        QueryWrapper<AiSetting> queryWrapper = new QueryWrapper<>();
+        //排序
+        switch (mode){
+            case 1:
+                //按创建时间降序
+                queryWrapper.lambda().select().orderByDesc(AiSetting::getCreateTime);
+                break;
+            case 2:
+                //按创建时间升序
+                queryWrapper.lambda().select().orderByAsc(AiSetting::getCreateTime);
+                break;
+            case 3:
+                //按使用量降序
+                queryWrapper.lambda().select().orderByDesc(AiSetting::getFav);
+                break;
+            case 4:
+                //按使用量升序
+                queryWrapper.lambda().select().orderByAsc(AiSetting::getFav);
+                break;
+            case 5:
+                //按更新时间降序
+                queryWrapper.lambda().select().orderByDesc(AiSetting::getUpdateTime);
+                break;
+            case 6:
+                //按更新时间升序
+                queryWrapper.lambda().select().orderByAsc(AiSetting::getUpdateTime);
+                break;
+            default:
+                //默认按创建时间降序
+                queryWrapper.lambda().select().orderByDesc(AiSetting::getCreateTime);
+                break;
+        }
+        aiSettingMapper.selectPage(aiSettingPage, queryWrapper);
         PageVo aiSettingsListVo = new PageVo(page, (int) aiSettingPage.getPages(), aiSettingPage.getRecords());
         return new CommonResp<>(200, "操作成功", aiSettingsListVo);
     }

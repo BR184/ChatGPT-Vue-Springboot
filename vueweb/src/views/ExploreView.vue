@@ -2,9 +2,19 @@
     <div class="shared-container">
         <div class="container-top">
             <h1 class="title-explore">探索并尝试各种AI设定</h1>
-            <el-pagination background layout="prev, pager, next" @current-change="handleCurrentChange"
+            <div class="container-top-right">
+                <div>
+                    <el-radio-group v-model="mode" @change="handleModeChange">
+                      <el-radio-button :label="1">最新发布</el-radio-button>
+                      <el-radio-button :label="2">最旧发布</el-radio-button>
+                      <el-radio-button :label="3">最多使用</el-radio-button>
+                      <el-radio-button :label="5">最近更新</el-radio-button>
+                    </el-radio-group>
+                  </div>
+                <el-pagination background layout="prev, pager, next" @current-change="handleCurrentChange"
                 :current-page.sync="this.current_page" :page-count="this.total_page">
-            </el-pagination>
+                </el-pagination>
+            </div>
         </div>
         <div class="main-divider"></div>
         <div class="central-container">
@@ -48,13 +58,14 @@ export default {
             sys_list: [],
             current_page: 1,
             total_page: 1,
-            user: []
+            user: [],
+            mode:1
         }
     },
     methods: {
         created() {
             this.user = JSON.parse(localStorage.getItem('User'))
-            this.axios.get('/system/shared?page=1').then((resp) => {
+            this.axios.get('/system/shared?page=1&mode=1').then((resp) => {
                 const data = resp.data
                 if (data.code == 200) {
                     this.sys_list = data.data.list;
@@ -140,10 +151,20 @@ export default {
                 });
             });
         },
+        handleModeChange(){
+            console.log(this.mode)
+            this.handleCurrentChange(1);
+        },
         handleCurrentChange(val) {
-            this.axios.get('/system/shared?page=' + val).then((resp) => {
+            if (val==null) {
+                return;
+            }
+            this.current_page = val;
+            console.log(this.mode)
+            this.axios.get('/system/shared?page=' + this.current_page + '&' + 'mode=' + this.mode).then((resp) => {
                 const data = resp.data
                 if (data.code == 200) {
+                    console.log(data)
                     this.sys_list = data.data.list;
                     this.current_page = data.data.page;
                     this.total_page = data.data.totalPage;
@@ -175,6 +196,46 @@ export default {
     border: 1px solid red;
     background-position: center;
 } */
+.el-radio-button:first-child .el-radio-button__inner{
+    border-radius: 0 !important;
+    box-shadow: transparent!important;
+}
+.el-radio-button:last-child .el-radio-button__inner{
+    border-radius: 0 !important;
+    box-shadow: transparent!important;
+}
+.el-radio-button__orig-radio:checked+.el-radio-button__inner{
+    background-color: #e74645!important;
+    border: none !important;
+    box-shadow: -1px 0 0 0 #e74645 !important;
+    box-shadow: transparent!important;
+}
+.el-radio-button,.is-active .el-radio-button__inner{
+    background-color: transparent!important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: transparent!important;
+}
+.el-radio-button,.is-active span{
+    background-color: #e74645!important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: 0!important;
+}
+.el-radio-button span:hover{
+    color: #e74645;
+}
+.container-top-right{
+    width: fit-content;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: end;
+}
+.sort-select{
+    margin-left: 20px; 
+}
 .shared-container {
     user-select: none;
 }
@@ -189,7 +250,7 @@ export default {
     border: 0;
     font-family: "Microsoft YaHei";
     color: #333333;
-    margin-bottom: 20px;
+    margin-bottom: 20px!important;
 }
 
 .main-divider {

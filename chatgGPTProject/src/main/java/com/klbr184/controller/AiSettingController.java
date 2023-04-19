@@ -52,15 +52,15 @@ public class AiSettingController {
     //分页查询共享系统设定
     @PreAuthorize("hasAuthority('default')")
     @GetMapping("shared")
-    public CommonResp getSystemList(@RequestParam Integer page) {
-        return aiSettingService.getSystemList(page);
+    public CommonResp getSystemList(@RequestParam Integer page,@RequestParam Integer mode) {
+        return aiSettingService.getSystemList(page,mode);
     }
 
     //分页查询所有系统设定
     @PreAuthorize("hasAuthority('manage_ai_setting')")
     @GetMapping("manage")
-    public CommonResp getAllSystemList(@RequestParam Integer page) {
-        return aiSettingService.getAllSystemListByPage(page);
+    public CommonResp getAllSystemList(@RequestParam Integer page,@RequestParam Integer mode) {
+        return aiSettingService.getAllSystemListByPage(page,mode);
     }
 
     //管理更新系统设定

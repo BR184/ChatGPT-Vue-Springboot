@@ -20,11 +20,11 @@ public interface AiSettingService {
 
     CommonResp updateSystem(AiSettingReq req);
 
-    CommonResp getSystemList(Integer page);
+    CommonResp getSystemList(Integer page,Integer mode);
 
     CommonResp saveSystem(Long id);
 
-    CommonResp getAllSystemListByPage(Integer page);
+    CommonResp getAllSystemListByPage(Integer page,Integer mode);
 
     CommonResp adminUpdateSystem(AiSettingReq req);
 
