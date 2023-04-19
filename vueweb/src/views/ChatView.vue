@@ -2,7 +2,8 @@
     <div class="chat_container">
         <el-row :gutter="0" class="chat_row">
             <el-col :span="4" class="left_menu">
-                <el-menu style="height: 100%;" default-active="0" class="el-menu-vertical-demo"
+                <el-scrollbar class="left_menu_scrollbar">
+                    <el-menu style="height: 100%;" default-active="0" class="el-menu-vertical-demo"
                     background-color="transparent" text-color="#909399" active-text-color="#e74645">
                     <!-- v-for遍历 el-menu-item -->
                     <el-menu-item v-for="(item, i) in chatList" :key="item.chatID" :index="i.toString()"
@@ -19,6 +20,7 @@
                         </div>
                     </el-menu-item>
                 </el-menu>
+                </el-scrollbar>
             </el-col>
             <el-col style="height: 105%;" :span="20">
                 <el-row class="chat_area">
@@ -163,6 +165,13 @@
     border: 1px solid red;
     background-position: center;
 }*/
+.left_menu_scrollbar{
+    height: 90%;
+    width: 100%;
+}
+.left_menu_scrollbar .el-scrollbar__wrap{
+    overflow-x: hidden !important;
+}
 .icon-send-btn {
     user-select: none;
     position: absolute;
@@ -975,7 +984,8 @@ export default {
         },
         createFilter(queryString) {
             return (saves) => {
-                return (saves.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                return (saves.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+                || saves.intro.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
             };
         },
         handleSelect(item) {

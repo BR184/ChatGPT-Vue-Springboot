@@ -196,33 +196,33 @@ export default {
     border: 1px solid red;
     background-position: center;
 } */
-.el-radio-button:first-child .el-radio-button__inner{
+.container-top-right .el-radio-button:first-child .el-radio-button__inner{
     border-radius: 0 !important;
     box-shadow: transparent!important;
 }
-.el-radio-button:last-child .el-radio-button__inner{
+.container-top-right .el-radio-button:last-child .el-radio-button__inner{
     border-radius: 0 !important;
     box-shadow: transparent!important;
 }
-.el-radio-button__orig-radio:checked+.el-radio-button__inner{
+.container-top-right .el-radio-button__orig-radio:checked+.el-radio-button__inner{
     background-color: #e74645!important;
     border: none !important;
     box-shadow: -1px 0 0 0 #e74645 !important;
     box-shadow: transparent!important;
 }
-.el-radio-button,.is-active .el-radio-button__inner{
+.el-radio-button.is-active .el-radio-button__inner{
     background-color: transparent!important;
     border: none !important;
     border-radius: 0 !important;
     box-shadow: transparent!important;
 }
-.el-radio-button,.is-active span{
+.el-radio-button.is-active span{
     background-color: #e74645!important;
     border: none !important;
     border-radius: 0 !important;
     box-shadow: 0!important;
 }
-.el-radio-button span:hover{
+.container-top-right .el-radio-button span:hover{
     color: #e74645;
 }
 .container-top-right{
