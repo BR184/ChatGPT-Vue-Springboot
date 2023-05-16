@@ -24,4 +24,8 @@ public interface ChatService {
     CommonResp getChatsExcludeSystem();
 
     CommonResp deleteChat(Long id);
+
+    CommonResp deleteLastChat(Long id);
+
+    CommonResp regenLastChat(Long id);
 }

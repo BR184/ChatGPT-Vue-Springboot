@@ -225,6 +225,9 @@ export default {
 .container-top-right .el-radio-button span:hover{
     color: #e74645;
 }
+.container-top-right .el-radio-button.is-active span:hover{
+    color: #d5d5d5;
+}
 .container-top-right{
     width: fit-content;
     height: 100px;

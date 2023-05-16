@@ -165,7 +165,7 @@ export default {
         },
         // 获取设定列表
         getTableData(page) {
-            this.axios.get('/system/manage?page=' + page).then(res => {
+            this.axios.get('/system/manage?page=' + page+'&mode=1').then(res => {
                 const data = res.data;
                 if (data.code == 200) {
                     this.tableData = data.data.list;

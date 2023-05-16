@@ -9,9 +9,10 @@
         </el-col>
         <el-col :span="6">
           <!-- 菜单 -->
-          <el-menu class="meun" :default-active="activeIndex" mode="horizontal" background-color=#fff
+          <el-menu class="meun" :default-active="this.$route.path" mode="horizontal" background-color=#fff
             active-text-color="#e74645" style="height: 100%;" :router="true">
             <el-menu-item index="/index">首页</el-menu-item>
+            <el-menu-item index="/chat">聊天</el-menu-item>
             <el-menu-item index="/explore">探索</el-menu-item>
             <el-menu-item index="3">分享</el-menu-item>
           </el-menu>
@@ -51,7 +52,6 @@
 
 export default {
   data: () => ({
-    activeIndex: "/index",
     token: null,
     nav_show: true,
     adm_show: false,

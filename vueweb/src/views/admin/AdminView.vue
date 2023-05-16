@@ -22,16 +22,10 @@
                         <i class="el-icon-set-up"></i>
                         <span slot="title">设定管理</span>
                     </el-menu-item>
-                    <el-submenu index="2">
-                        <template slot="title">
-                            <i class="el-icon-location"></i>
-                            <span>导航一</span>
-                        </template>
-                        <el-menu-item-group>
-                            <el-menu-item index="2-1">选项1</el-menu-item>
-                            <el-menu-item index="2-2">选项2</el-menu-item>
-                        </el-menu-item-group>
-                    </el-submenu>
+                    <el-menu-item index="share">
+                        <i class="el-icon-s-unfold"></i>
+                        <span slot="title">分享管理</span>
+                    </el-menu-item>
                 </el-menu>
             </el-col>
             <el-col :span="20" class="menu-right-container">

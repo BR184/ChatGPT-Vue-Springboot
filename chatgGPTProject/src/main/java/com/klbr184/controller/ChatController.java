@@ -69,5 +69,16 @@ public class ChatController {
     public CommonResp deleteChat(@RequestParam Long id) {
         return chatService.deleteChat(id);
     }
-
+    //删除上条聊天
+    @PreAuthorize("hasAuthority('default')")
+    @DeleteMapping("last")
+    public CommonResp deleteLastChat(@RequestParam Long id) {
+        return chatService.deleteLastChat(id);
+    }
+    //重新生成上条聊天GPT的回复
+    @PreAuthorize("hasAuthority('default')")
+    @GetMapping("regen")
+    public CommonResp regenLastChat(@RequestParam Long id) {
+        return chatService.regenLastChat(id);
+    }
 }

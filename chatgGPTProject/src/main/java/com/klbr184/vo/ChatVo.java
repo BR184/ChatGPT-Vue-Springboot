@@ -16,6 +16,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatVo{
+    //聊天ID(单条聊天)
+    private Long id;
     //内容发送者
     private String chatSide;
     //聊天内容

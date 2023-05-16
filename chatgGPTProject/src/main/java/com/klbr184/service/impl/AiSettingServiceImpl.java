@@ -210,7 +210,7 @@ public class AiSettingServiceImpl implements AiSettingService {
 
     @Override
     public CommonResp getAllSystemListByPage(Integer page,Integer mode) {
-        IPage<AiSetting> aiSettingPage = new Page<>(page,10);
+        IPage<AiSetting> aiSettingPage = new Page<>(page,8);
         QueryWrapper<AiSetting> queryWrapper = new QueryWrapper<>();
         //排序
         switch (mode){

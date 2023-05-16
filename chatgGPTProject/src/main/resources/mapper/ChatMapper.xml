@@ -15,7 +15,7 @@
     </select>
     <select id="selectChatByChatID" resultType="com.klbr184.vo.ChatVo">
         SELECT
-            c.chat_date,c.chat_side,c.chat_content,c.enable
+            c.id,c.chat_date,c.chat_side,c.chat_content,c.enable
         FROM user_chat uc
                  LEFT JOIN chat c ON uc.chat_id = c.chat_id
         WHERE

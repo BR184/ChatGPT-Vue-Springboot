@@ -3,8 +3,10 @@ package com.klbr184.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.toolkit.BeanUtils;
 import com.klbr184.entity.Chat;
 import com.klbr184.entity.UserChat;
+import com.klbr184.exception.SystemException;
 import com.klbr184.mapper.ChatMapper;
 import com.klbr184.mapper.UserChatMapper;
 import com.klbr184.req.SendMsgReq;
@@ -30,10 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -106,6 +105,107 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public CommonResp deleteLastChat(Long id) {
+        List<ChatVo> chatVos = chatMapper.selectChatByChatID(id, SecurityUtil.getUserId());
+        //新的聊天在前
+        chatVos.sort(
+                new Comparator<ChatVo>() {
+                    @Override
+                    public int compare(ChatVo o1, ChatVo o2) {
+                        if (o1.getChatDate().getTime() > o2.getChatDate().getTime()) {
+                            return -1;
+                        } else if (o1.getChatDate().getTime() < o2.getChatDate().getTime()) {
+                            return 1;
+                        }
+                        return 0;
+                    }
+                }
+        );
+        Boolean flag = true;
+        long[] ids = new long[2];
+        for (ChatVo chatVo : chatVos) {
+            if (chatVo.getChatSide().equals("system")) {
+                return new CommonResp<>(500, "没有更多聊天！", null);
+            }
+            if(flag && chatVo.getChatSide().equals("gpt")) {
+                flag = false;
+                ids[0] = chatVo.getId();
+            }
+            if(flag && chatVo.getChatSide().equals("user")) {
+                return new CommonResp<>(500, "聊天顺序有误！请删除整个聊天！", null);
+            }
+            if(!flag && chatVo.getChatSide().equals("user")) {
+                ids[1] = chatVo.getId();
+                break;
+            }
+        }
+        try {
+            chatMapper.deleteById(ids[0]);
+            chatMapper.deleteById(ids[1]);
+        }catch (Exception e) {
+            return new CommonResp<>(500, "操作失败", null);
+        }
+        UserChat userChat = userChatMapper.selectById(id);
+        userChat.setUsageTotalTokens((int) (userChat.getUsageTotalTokens()*0.9));
+        userChatMapper.updateById(userChat);
+        return new CommonResp<>(200, "操作成功", null);
+    }
+
+    @Override
+    public CommonResp regenLastChat(Long id) {
+        List<ChatVo> chatVos = chatMapper.selectChatByChatID(id, SecurityUtil.getUserId());
+        //对聊天进行排序，新的聊天在前
+        chatVos.sort(new Comparator<ChatVo>() {
+            @Override
+            public int compare(ChatVo o1, ChatVo o2) {
+                if (o1.getChatDate().getTime() > o2.getChatDate().getTime()) {
+                    return -1;
+                } else if (o1.getChatDate().getTime() < o2.getChatDate().getTime()) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        //找到最后一条聊天，如果为用户或系统发送的则返回错误
+        if (chatVos.get(0).getChatSide().equals("user") || chatVos.get(0).getChatSide().equals("system")) {
+            return new CommonResp<>(500, "操作失败", null);
+        }
+        //找到最后一条聊天，如果为GPT发送的则先删除再重新生成
+        if (chatVos.get(0).getChatSide().equals("gpt")) {
+            try {
+                chatMapper.deleteById(chatVos.get(0).getId());
+                //然后重新发送上一条用户发送的聊天
+                SendMsgReq sendMsgReq = new SendMsgReq();
+                UserChat userChat = userChatMapper.selectById(id);
+                if (userChat == null) {
+                    throw new SystemException(500, "操作失败");
+                }
+                //复制类
+                BeanUtil.copyProperties(userChat, sendMsgReq);
+                for (ChatVo chatVo : chatVos) {
+                    if(chatVo.getChatSide().equals("user")){
+                        sendMsgReq.setId(id);
+                        sendMsgReq.setMessage(chatVo.getChatContent());
+                        chatMapper.deleteById(chatVo.getId());
+                        break;
+                    }
+                    if (chatVo.getChatSide().equals("system")) {
+                        throw new SystemException(500, "操作失败");
+                    }
+                }
+                if (sendMsgReq.getMessage() == null) {
+                    throw new SystemException(500, "操作失败");
+                }
+                return sendChat(sendMsgReq);
+            }catch (Exception e) {
+                throw new SystemException(500, "操作失败");
+            }
+        }
+        //最后一条聊天为系统发送的则无法重新生成
+        return new CommonResp<>(500, "操作失败", null);
+    }
+
+    @Override
     public CommonResp addNewChat(String title) {
         Long chatID = IdUtil.getSnowflakeNextId();
         UserChat userChat = new UserChat();
@@ -128,8 +228,8 @@ public class ChatServiceImpl implements ChatService {
         //TODO 检测用户余额
         //获取数据库原本数据
         InfoVo oldInfoVo = chatMapper.selectChatInfoByChatID(sendMsgReq.getId(), SecurityUtil.getUserId());
-        //查看system有无更改，有更改则更新
-        if (oldInfoVo.getSystem().equals(sendMsgReq.getSystem())) {
+        //查看system有无更改（需要不为空），有更改则更新
+        if (oldInfoVo.getSystem().equals(sendMsgReq.getSystem())||sendMsgReq.getSystem()==null) {
         } else {
             Chat newC = new Chat();
             newC.setChatContent(sendMsgReq.getSystem());
